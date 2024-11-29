@@ -1,0 +1,16 @@
+{
+	"template": "service",
+	"artifactType": "service",
+	"data":
+
+{
+"service": "user",
+"serviceVersion": "0.0.1-SNAPSHOT",
+"com": "com",
+"org": "pos",
+"company": "netscoretech",
+"chenilePackage": "org.chenile",
+"chenileVersion": "1.2.3",
+"Service": "User"
+}
+}

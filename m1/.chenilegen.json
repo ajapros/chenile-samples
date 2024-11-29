@@ -1,0 +1,20 @@
+{
+	"template": "newmonolith",
+	"artifactType": "monolith",
+	"data":
+
+{
+"monolith": "m1",
+"monolithVersion": "0.0.1-SNAPSHOT",
+"com": "org",
+"org": "samples",
+"company": "chenile",
+"chenilePackage": "org.chenile",
+"chenileVersion": "1.2.3",
+"Monolith": "M1",
+"service": "s1",
+"serviceTemplate": "service",
+"serviceVersion": "0.0.1-SNAPSHOT",
+"services": [ "s1-service" ]
+}
+}

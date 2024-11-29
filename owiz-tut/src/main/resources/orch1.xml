@@ -1,0 +1,5 @@
+<flows>
+	<flow>
+		<command componentName="simpleCommand1" first='true'/>
+	</flow>
+</flows>

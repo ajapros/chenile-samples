@@ -1,0 +1,19 @@
+order_id=3
+order_lines_id=6
+
+while (( order_id < 31 ))
+do
+	echo "insert into order_lines(id,product,order_id, quantity, unit_price) values(${order_lines_id},'prod${order_id}1', ${order_id},5,200);"
+	order_lines_id=$(( order_lines_id + 1 ))
+
+	echo "insert into order_lines(id,product,order_id, quantity, unit_price) values(${order_lines_id},'prod${order_id}1', ${order_id},10,100);"
+	order_lines_id=$(( order_lines_id + 1 ))
+	unit_amount=$(( order_id - 1 ))
+
+	echo "insert into order_lines(id,product,order_id, quantity, unit_price) values(${order_lines_id},'prod${order_id}1', ${order_id},1,${unit_amount});"
+	order_id=$(( order_id + 1 ))
+	order_lines_id=$(( order_lines_id + 1 ))
+
+	echo ""
+
+done

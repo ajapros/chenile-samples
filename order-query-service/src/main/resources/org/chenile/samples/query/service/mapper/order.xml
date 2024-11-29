@@ -1,0 +1,130 @@
+ 
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace = "Order">
+
+
+<resultMap id = "result" type = "map">
+    <result property = "id" column = "ID"/>
+    <result property="stateId" column ="STATEID"/>
+    <result property="flowId" column ="FLOWID"/>
+    <result property = "amount" column = "AMOUNT"/>
+    <result property = "orderDate" column = "ORDER_DATE"/>
+    <result property="slaYellowDate" column="SLA_YELLOW_DATE"/>
+    <result property="slaRedDate" column="SLA_RED_DATE"/>
+    <collection property="orderLines" javaType="ArrayList" resultMap="olResultMap"/>
+</resultMap>
+
+<resultMap id = "olResultMap" type = "map">
+    <result property="product"  column="PRODUCT"/>
+    <result property="unitPrice"  column="UNIT_PRICE"/>
+    <result property="quantity"  column="QUANTITY"/>
+</resultMap>
+
+<!-- the getAll query supports pagination. So make sure that there exists a count query
+with the name getAll-count for such queries.
+This is a complex query that supports where conditions on both orders and orderlines. However
+the number of orders needs to be tracked (not the number of rows returned by the query)
+Hence the count query does a count(order.id) rather than do a full count(*)
+-->
+<select id='getAll-count' resultType="int" >
+	select count(distinct o.id) from orders o inner join order_lines ol
+                on o.id = ol.order_id
+    <where>
+        <if test="stateId != null">
+            AND stateId in
+            <foreach item="item" index="index" collection="stateId"
+                     open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="amount != null" >
+            AND amount between #{amount[0]} and #{amount[1]}
+        </if>
+        <if test="order_date != null" >
+            AND order_date between #{order_date[0]} and #{order_date[1]}
+        </if>
+        <if test="sla_yellow_date != null" >
+            AND sla_yellow_date between #{sla_yellow_date[0]} and #{sla_yellow_date[1]}
+        </if>
+        <if test="sla_red_date != null" >
+            AND sla_red_date between #{sla_red_date[0]} and #{sla_red_date[1]}
+        </if>
+        <if test="product != null">
+            AND product in
+            <foreach item="item" index="index" collection="product"
+                     open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+  </where>
+</select>
+
+<!-- The getAll query supports an elaborate where clause. 
+The conditional constructs ensure that the clause is constructed only if 
+specific filters are passed. Notice that 
+amount supports a between clause and product supports an IN clause.
+This information must be reflected in the column metadata in the definitions JSON that
+accompanies this mapper.
+Since this query is sortable the orderby clause is important.
+Since this query supports pagination the ${pagination} is mandatory. 
+We also need the count query above
+Make sure that sortable and paginated are set to true in the corresponding query definitions.
+Also notice that the order level where clause is in the sub-query (for temporary table u) and
+that the rest of the where clause is in the main result query.
+Finally notice that pagination is in the sub-query since we want to do a join only for one full
+page of data rather than for all orders. This takes care of pagination as well as optimizes the
+final select.
+-->
+<select id = "getAll" resultMap = "result">
+    with u(id, stateId, flowId, amount,sla_yellow_date, sla_red_date, order_date) as (
+       SELECT  id, stateId, flowId,amount, sla_yellow_date, sla_red_date,order_date
+        FROM orders
+        <where>
+            <if test="stateId != null">
+                AND stateId in
+                <foreach item="item" index="index" collection="stateId"
+                         open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="amount != null" >
+                AND amount between #{amount[0]} and #{amount[1]}
+            </if>
+            <if test="order_date != null" >
+                AND order_date between #{order_date[0]} and #{order_date[1]}
+            </if>
+            <if test="sla_yellow_date != null" >
+                AND sla_yellow_date between #{sla_yellow_date[0]} and #{sla_yellow_date[1]}
+            </if>
+            <if test="sla_red_date != null" >
+                AND sla_red_date between #{sla_red_date[0]} and #{sla_red_date[1]}
+            </if>
+        </where>
+        ${pagination}
+    )
+        select u.id as id,
+        u.stateId as stateId,
+        u.flowId as flowId,
+        u.amount as amount,
+        to_char(u.order_date,'YYYY-MM-DD HH12:MI:SS') as order_date,
+        to_char(u.sla_yellow_date,'YYYY-MM-DD HH12:MI:SS') as sla_yellow_date,
+        to_char(u.sla_red_date,'YYYY-MM-DD HH12:MI:SS') as sla_red_date,
+        ol.product as product,
+        ol.unit_price as unit_price,
+        ol.quantity as quantity
+            from u
+            inner join order_lines as ol on u.id = ol.order_id
+         <where>
+             <if test="product != null">
+                 AND product in
+                 <foreach item="item" index="index" collection="product"
+                          open="(" separator="," close=")">
+                     #{item}
+                 </foreach>
+             </if>
+         </where>
+        ${orderby}
+</select>
+</mapper>

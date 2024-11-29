@@ -1,0 +1,9 @@
+<flows>
+	<flow>
+		<filter-chain>
+			<interceptor1 index='100'/>
+			<interceptor2 index='90'/>
+			<interceptor3 index='105'/>
+		</filter-chain>
+	</flow>
+</flows>

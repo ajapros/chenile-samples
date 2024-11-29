@@ -1,0 +1,9 @@
+<flows>
+	<flow>
+		<chain>
+			<simple-command1/>
+			<simple-command2/>
+			<simple-command3/>
+		</chain>
+	</flow>
+</flows>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<states>
+	<event-information eventId='assign' meta-bodyType='org.chenile.samples.issue.model.AssignIssuePayload'/>
+	<event-information eventId='resolve' meta-bodyType='org.chenile.workflow.param.MinimalPayload'/>
+	<event-information eventId='close' meta-bodyType='org.chenile.workflow.param.MinimalPayload'/>
+	<event-information eventId="addTask" meta-bodyType="org.chenile.samples.issue.model.Task"/>
+	<event-information eventId="completeTask" meta-bodyType="org.chenile.samples.issue.model.CompleteTaskPayload"/>
+	<default-transition-action componentName="issueBaseTransitionAction"/>
+	
+	<flow id='test-flow' default='true'>
+		<entry-action componentName="issueEntryAction"/>
+		<exit-action componentName="issueExitAction"/>
+		<manual-state id='OPENED' initialState='true'>
+			<on eventId='assign'  newStateId='ASSIGNED' componentName='assignIssue'/>
+		</manual-state>
+
+		<manual-state id='ASSIGNED'>
+			<on eventId="addTask" componentName="addTask"/>
+			<on eventId="completeTask" componentName="completeTask"/>
+			<on eventId='resolve' newStateId='RESOLVED' componentName='resolveIssue'/>
+		</manual-state>
+
+		<manual-state id='RESOLVED'>
+			<on eventId='close' newStateId='CLOSED' componentName='closeIssue'/>
+		</manual-state>
+		<manual-state id='CLOSED' />
+	</flow>
+	
+</states>

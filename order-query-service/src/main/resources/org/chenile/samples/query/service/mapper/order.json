@@ -1,0 +1,83 @@
+[
+	{
+        "id": "Order.getAll",
+        "name": "orders",
+        "columnMetadata": {
+			"id" : {
+				"name": "id",
+				"filterable": true,
+				"columnType": "Text",
+				"betweenQuery": false
+			},
+			"amount" : {
+				"name": "amount",
+				"columnType" : "Number",
+				"likeQuery": false,
+				"filterable": true,
+				"betweenQuery": true
+			},
+			"order_date" : {
+				"name": "order_date",
+				"columnType" : "DateTime",
+				"likeQuery": false,
+				"filterable": true,
+				"betweenQuery": true
+			},
+			"product" : {
+				"name": "product",
+				"filterable": true,
+				"columnType": "Text",
+				"betweenQuery": false,
+				"containsQuery": true
+			},
+			"unit_cost" : {
+				"name": "unit_cost",
+				"columnType" : "Number",
+				"likeQuery": false,
+				"filterable": false,
+				"betweenQuery": false
+			},
+			"quantity" : {
+				"name": "quantity",
+				"columnType" : "Number",
+				"likeQuery": false,
+				"filterable": false,
+				"betweenQuery": false
+			},
+			"stateId" : {
+				"name": "stateId",
+				"filterable": true,
+				"columnType": "Text",
+				"betweenQuery": false
+			},
+			"flowId" : {
+				"name": "flowId",
+				"filterable": true,
+				"columnType": "Text",
+				"betweenQuery": false
+			},
+			"slaYellowDate" : {
+				"name": "slaYellowDate",
+				"filterable": true,
+				"columnType": "Text",
+				"betweenQuery": true
+			},
+			"slaRedDate" : {
+				"name": "slaRedDate",
+				"filterable": true,
+				"columnType": "Text",
+				"betweenQuery": true
+			}
+		},	
+		"flexiblePropnames": false,
+        "paginated" : true,
+        "sortable" : true,
+		"toDoList": true,
+		"stateColumn": "stateId",
+		"flowColumn": "flowId",
+		"workflowName": "order",
+		"tendingLateColumn": "SLA_YELLOW_DATE",
+		"lateColumn": "SLA_RED_DATE"
+    }
+    
+]

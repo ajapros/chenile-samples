@@ -1,0 +1,8 @@
+<flows>
+	<flow>
+		<total>
+			<simple-command1 type='first'/>
+			<simple-command2 type='second'/>
+		</total>
+	</flow>
+</flows>

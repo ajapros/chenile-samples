@@ -1,0 +1,16 @@
+{
+	"template": "service",
+	"artifactType": "service",
+	"data":
+
+{
+"service": "s1",
+"serviceVersion": "0.0.1-SNAPSHOT",
+"com": "org",
+"org": "samples",
+"company": "chenile",
+"chenilePackage": "org.chenile",
+"chenileVersion": "1.2.3",
+"Service": "S1"
+}
+}

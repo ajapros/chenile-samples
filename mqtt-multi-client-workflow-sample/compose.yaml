@@ -1,0 +1,91 @@
+# Docker compose file assembles all the docker images for three stores and one cloud
+
+services:
+  cloud:
+    image: chenile-samples/issue/cloud-container
+    ports:
+      - "8000:8000"
+    networks:
+      - cloud-net
+    volumes:
+      - cloud-vol:/db
+    container_name: cloud
+      
+
+  store1:
+    image: chenile-samples/issue/store-container
+    ports:
+      - "8001:8001"
+    volumes:
+      - store1-vol:/db
+    networks:
+      - store1-net
+      - cloud-net
+    environment:
+      port: "8001"
+      tenant: "t1"
+      store: "store1"
+    container_name: store1
+
+  store2:
+    image: chenile-samples/issue/store-container
+    ports:
+      - "8002:8002"
+    volumes:
+      - store2-vol:/db
+    networks:
+      - store2-net
+      - cloud-net
+    environment:
+      port: "8002"
+      tenant: "t1"
+      store: "store2"
+    container_name: store2
+
+  store3:
+    image: chenile-samples/issue/store-container
+    ports:
+      - "8003:8003"
+    volumes:
+      - store3-vol:/db
+    networks:
+      - store3-net
+      - cloud-net
+    environment:
+      port: "8003"
+      tenant: "t2"
+      store: "store3"
+    container_name: store3
+
+  emqx:
+    image: emqx/emqx:latest
+    ports:
+      - "1883:1883"
+      - "8083:8083"
+      - "8084:8084"
+      - "8883:8883"
+      - "18083:18083"
+    networks:
+      - cloud-net
+    container_name: emqx
+
+volumes:
+  cloud-vol: {}
+  store1-vol: {}
+  store2-vol: {}
+  store3-vol: {}
+  
+networks:
+  cloud-net: 
+    driver: "bridge"
+    name: cloud-net
+  store1-net:
+    driver: "bridge"
+    name: store1-net
+  store2-net: 
+    driver: "bridge"
+    name: store2-net
+  store3-net: 
+    driver: "bridge"
+    name: store3-net
+    

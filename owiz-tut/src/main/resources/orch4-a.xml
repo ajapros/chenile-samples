@@ -1,0 +1,9 @@
+<flows>
+	<flow>
+		<chain>
+			<simple-command1 index='101'/>
+			<simple-command2 index='98'/>
+			<simple-command3 index='105'/>
+		</chain>
+	</flow>
+</flows>

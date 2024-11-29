@@ -1,0 +1,8 @@
+<flows>
+	<add-command-tag tag='switch' componentName='org.chenile.owiz.impl.ognl.OgnlRouter'/>
+	<flow id='flow1'>
+		<simple-command3 route='route3'>
+			<attach-to parentId='myrouter'/>
+		</simple-command3>
+	</flow>
+</flows>

@@ -1,0 +1,5 @@
+<flows>
+	<flow>
+		<orch-aware-command commandId='my-orch-aware-command'/>
+	</flow>
+</flows>

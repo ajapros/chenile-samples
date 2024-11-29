@@ -1,0 +1,20 @@
+{
+	"template": "newmonolith",
+	"artifactType": "monolith",
+	"data":
+
+{
+"monolith": "employeed",
+"monolithVersion": "0.0.1-SNAPSHOT",
+"com": "com",
+"org": "pos",
+"company": "netscoretech",
+"chenilePackage": "org.chenile",
+"chenileVersion": "1.2.3",
+"Monolith": "Employeed",
+"service": "empl",
+"serviceTemplate": "service",
+"serviceVersion": "0.0.1-SNAPSHOT",
+"services": [ "empl-service" ]
+}
+}

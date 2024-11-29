@@ -1,0 +1,9 @@
+<flows>
+	<add-command-tag tag='switch' componentName='org.chenile.owiz.impl.ognl.OgnlRouter'/>
+	<flow id='flow1'>
+		<switch id='myrouter' expression='myRoute'>
+			<simple-command1 route='route1'/>
+			<simple-command2 route='route2'/>
+		</switch>
+	</flow>
+</flows>

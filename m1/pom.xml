@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<packaging>pom</packaging>
+	<modules>
+		<module>m1-configurations</module>	
+		<module>m1-package</module>
+	</modules>
+
+	<parent>
+		<groupId>org.chenile</groupId>
+		<version>2.0.1</version>
+		<artifactId>chenile-parent</artifactId>
+	</parent>
+
+	<properties>
+		<m1.version>${revision}</m1.version>
+		<revision>0.0.1-SNAPSHOT</revision>
+	</properties>
+	
+	<groupId>org.chenile.samples.m1</groupId>
+	<artifactId>m1-parent</artifactId>
+	<version>${revision}</version>
+	<name>All Modules that belong to the M1 deployment</name>
+	<description>Modules execution and deployment project</description>
+
+</project>

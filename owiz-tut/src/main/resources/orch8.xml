@@ -1,0 +1,9 @@
+<flows>
+	<flow>
+		<filter-chain>
+			<interceptor1/>
+			<interceptor2/>
+			<interceptor3/>
+		</filter-chain>
+	</flow>
+</flows>

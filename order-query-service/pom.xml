@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<parent>
+		<artifactId>chenile-parent</artifactId>
+		<groupId>org.chenile</groupId>
+		<version>2.0.1</version>
+	</parent>
+	
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>order-query-service</artifactId>
+	<version>${revision}</version>
+	<name>Query Service Test Cases for Orders </name>
+	<description>Query Service Test Cases for Orders - demonstrates with query in Postgres and similar </description>
+
+	<properties>
+		<revision>0.0.1-SNAPSHOT</revision>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.chenile</groupId>
+			<artifactId>workflow-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+    		<groupId>com.h2database</groupId>
+    		<artifactId>h2</artifactId>
+    		<scope>test</scope>
+		</dependency>
+		<dependency>
+    		<groupId>org.chenile</groupId>
+    		<artifactId>chenile-query-controller</artifactId>
+    		<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.chenile</groupId>
+			<artifactId>cucumber-utils</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.vintage</groupId>
+			<artifactId>junit-vintage-engine</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>
