@@ -18,6 +18,7 @@ public class FooInterceptor extends BaseChenileInterceptor {
 	@Override
 	protected void doPostProcessing(ChenileExchange exchange) {
 		Map<String,Object> foc = getExtensionByAnnotation("Foo", exchange);
+
 		Map<String,Object> map = (Map<String,Object>)exchange.getResponse();
 		map.put("foo", foc.get("message"));
 	}

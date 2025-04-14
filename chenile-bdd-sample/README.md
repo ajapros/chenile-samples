@@ -5,6 +5,8 @@ The test case that demonstrates the BDD requires two things to be running:
 2. The price server in port 8080
 
 To run keycloak, use keycloak-start.sh script.
+After running keycloak login to the console and import the tenant0 file that exists in the same folder.
+This will create tenant0 in Keycloak.
 To run the price server, compile the price and priced modules under the "service-with-persistence" project. 
 Run the priced server using "make run" in folder service-with-persistence/priced.
 

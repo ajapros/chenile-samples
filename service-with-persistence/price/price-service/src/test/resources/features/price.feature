@@ -82,7 +82,7 @@ Feature: Tests the price Service using a REST client.
     Then success is true
     And the REST response key "variantId" is "Variant01"
     And the REST response key "amount" is "100.0"
-    And store "$.payload.id" from  response to "id"
+    And store "$.payload.id" from response to "id"
     And the REST response key "tenant" is "${tenant}"
 
 
@@ -113,7 +113,7 @@ Feature: Tests the price Service using a REST client.
     Then success is true
     And the REST response key "variantId" is "Variant02"
     And the REST response key "amount" is "100.19"
-    And store "$.payload.id" from  response to "id"
+    And store "$.payload.id" from response to "id"
     And the REST response key "tenant" is "${tenant}"
 
 
@@ -144,7 +144,7 @@ Feature: Tests the price Service using a REST client.
     Then success is true
     And the REST response key "variantId" is "Variant03"
     And the REST response key "amount" is "200.11"
-    And store "$.payload.id" from  response to "id"
+    And store "$.payload.id" from response to "id"
     And the REST response key "tenant" is "${tenant}"
 
 

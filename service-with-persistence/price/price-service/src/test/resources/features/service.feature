@@ -14,7 +14,7 @@ Feature: Tests the price Service using a REST client.
 	}
 	"""
 	Then success is true
-    And store "$.payload.id" from  response to "id"
+    And store "$.payload.id" from response to "id"
     # And the REST response key "tenant" is "${tenant}"
     # And the REST response key "createdBy" is "${employee}"
 
