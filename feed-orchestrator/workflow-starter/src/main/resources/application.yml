@@ -1,0 +1,53 @@
+logging:
+  level:
+    ROOT: INFO
+    org.hibernate.SQL: INFO
+    org.chenile.*: DEBUG
+
+spring:
+  rabbitmq:
+    host: rabbitmq-service
+    port: 5672
+    username: guest
+    password: guest
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+  banner:
+    location: classpath:banner.txt
+  devtools:
+    restart:
+      enabled: true
+      additional-exclude: static/**,.h2.server.properties
+    livereload:
+      enabled: false # we use Webpack dev server + BrowserSync for livereload
+  jackson:
+    serialization:
+      indent-output: true
+  datasource:
+    maximumPoolSize: '10'
+    type: com.zaxxer.hikari.HikariDataSource
+    username: gaurav
+    password: 1234
+    minimumIdle: '2'
+    idleTimeout: '5000'
+    url: jdbc:postgresql://postgres-service:5432/feed
+
+
+  liquibase:
+    # Remove 'faker' if you do not want the sample data to be loaded automatically
+    contexts: dev, faker
+
+  messages:
+    cache-duration: PT1S # 1 second, see the ISO 8601 standard
+  thymeleaf:
+    cache: false
+
+server:
+  port: 8000
+  error:
+    whitelabel:
+      enabled: false
+
+

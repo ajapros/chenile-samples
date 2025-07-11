@@ -1,0 +1,84 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.vymo.tech</groupId>
+    <artifactId>feed-parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>workflow-starter</module>
+        <module>ingestion-service</module>
+    </modules>
+
+    <parent>
+        <groupId>org.chenile</groupId>
+        <artifactId>chenile-parent</artifactId>
+        <version>2.0.30</version>
+    </parent>
+
+    <properties>
+        <java.version>17</java.version>
+        <revision>${chenile.parent.version}</revision>
+
+        <chenile.parent.version>2.0.30</chenile.parent.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <postgresql.version>42.7.5</postgresql.version>
+        <org.mapstruct.version>1.6.3</org.mapstruct.version>
+    </properties>
+
+	<name>Feed Parent</name>
+
+	<dependencies>
+
+        <dependency>
+            <groupId>org.chenile</groupId>
+            <artifactId>chenile-proxy</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+
+
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.14</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+
+
+		<dependency>
+			<groupId>org.chenile</groupId>
+            <artifactId>workflow-service</artifactId>
+		</dependency>
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+		<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+	    </dependency>
+	    <dependency>
+			<groupId>org.chenile</groupId>
+			<artifactId>chenile-http</artifactId>
+		</dependency>
+
+	</dependencies>
+
+
+</project>
+

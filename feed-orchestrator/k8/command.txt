@@ -1,0 +1,27 @@
+ docker build -t feed-worker .
+ docker build -t feed-master .
+
+
+ watch kubectl exec -n keda-mvp -it $(kubectl get pod -n keda-mvp -l app=rabbitmq -o jsonpath="{.items[0].metadata.name}") -- rabbitmqctl list_queues name messages consumers
+
+
+-- don't run
+ watch -n 2 "kubectl exec -n keda-mvp $(kubectl get pod -n keda-mvp -l app=postgres -o jsonpath='{.items[0].metadata.name}') -- psql -U gaurav -d feed -c \"select id, flow_id, parent_id, process_type, state_id, num_sub_processes, num_completed_sub_processes, completed_percent from process_table order by id asc;\""
+
+
+ watch -n 2 -d kubectl get deployments -n keda-mvp
+
+
+
+
+kubectl exec -n keda-mvp -it $(kubectl get pod -n keda-mvp -l app=postgres -o jsonpath='{.items[0].metadata.name}') -- bash
+
+psql -Ugaurav -d feed
+
+SELECT id, flow_id, parent_id, process_type, state_id, num_sub_processes, num_completed_sub_processes, completed_percent FROM process_table ORDER BY id ASC;
+\watch 5
+
+
+
+bin/kafka-topics.sh --create --topic chenile   --bootstrap-server localhost:9092   --partitions 6 --replication-factor 1
+ bin/kafka-topics.sh   --alter   --topic chenile   --partitions 6   --bootstrap-server localhost:9092
