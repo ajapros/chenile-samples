@@ -44,6 +44,10 @@ spring:
   thymeleaf:
     cache: false
 
+process:
+  manager:
+    base-url: http://master-service:8000
+
 server:
   port: 9000
   error:
