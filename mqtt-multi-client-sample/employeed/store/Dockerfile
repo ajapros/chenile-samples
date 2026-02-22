@@ -5,4 +5,4 @@ COPY employeed-package/target/*.jar /app/app.jar
 ENV store=store1
 ENV port=8001
 ENV tenant=t1
-ENTRYPOINT ["java","-Dspring.profiles.active=store","-Dmqtt.clientID=${store}","-Dserver.port=${port}","-Dmqtt.subscribe.base.topic=c/${tenant}","-jar","/app/app.jar"]
+ENTRYPOINT ["java","-Dspring.profiles.active=store","-Dpubsub.clientID=${store}","-Dserver.port=${port}","-Dmqtt.subscribe.base.topic=c/${tenant}","-jar","/app/app.jar"]

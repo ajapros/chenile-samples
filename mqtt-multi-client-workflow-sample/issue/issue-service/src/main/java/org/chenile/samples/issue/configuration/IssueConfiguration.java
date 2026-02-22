@@ -45,13 +45,13 @@ public class IssueConfiguration {
 		return stmFlowStore;
 	}
 	
-	@Bean @Autowired STM<Issue> issueEntityStm(@Qualifier("issueFlowStore") STMFlowStoreImpl stmFlowStore) throws Exception{
+	@Bean STM<Issue> issueEntityStm(@Qualifier("issueFlowStore") STMFlowStoreImpl stmFlowStore) throws Exception{
 		STMImpl<Issue> stm = new STMImpl<>();		
 		stm.setStmFlowStore(stmFlowStore);
 		return stm;
 	}
 	
-	@Bean @Autowired STMActionsInfoProvider issueActionsInfoProvider(@Qualifier("issueFlowStore") STMFlowStoreImpl stmFlowStore) {
+	@Bean STMActionsInfoProvider issueActionsInfoProvider(@Qualifier("issueFlowStore") STMFlowStoreImpl stmFlowStore) {
 		return new STMActionsInfoProvider(stmFlowStore);
 	}
 	
@@ -60,7 +60,7 @@ public class IssueConfiguration {
 		return new IssueEntityStore();
 	}
 	
-	@Bean @Autowired StateEntityServiceImpl<Issue> _issueStateEntityService_(
+	@Bean StateEntityServiceImpl<Issue> _issueStateEntityService_(
 			@Qualifier("issueEntityStm") STM<Issue> stm,
 			@Qualifier("issueActionsInfoProvider") STMActionsInfoProvider issueInfoProvider,
 			@Qualifier("issueEntityStore") EntityStore<Issue> entityStore){
@@ -69,7 +69,7 @@ public class IssueConfiguration {
 	
 	// Now we start constructing the STM Components 
 	
-	@Bean @Autowired GenericEntryAction<Issue> issueEntryAction(@Qualifier("issueEntityStore") EntityStore<Issue> entityStore,
+	@Bean GenericEntryAction<Issue> issueEntryAction(@Qualifier("issueEntityStore") EntityStore<Issue> entityStore,
 			@Qualifier("issueActionsInfoProvider") STMActionsInfoProvider issueInfoProvider){
 		return new GenericEntryAction<Issue>(entityStore,issueInfoProvider);
 	}
@@ -78,11 +78,11 @@ public class IssueConfiguration {
 		return new GenericExitAction<Issue>();
 	}
 	
-	@Bean @Autowired StmBodyTypeSelector issueBodyTypeSelector(@Qualifier("issueActionsInfoProvider") STMActionsInfoProvider issueInfoProvider) {
+	@Bean StmBodyTypeSelector issueBodyTypeSelector(@Qualifier("issueActionsInfoProvider") STMActionsInfoProvider issueInfoProvider) {
 		return new StmBodyTypeSelector(issueInfoProvider);
 	}
 	
-	@Bean @Autowired STMTransitionAction<Issue> issueBaseTransitionAction(){
+	@Bean STMTransitionAction<Issue> issueBaseTransitionAction(){
 		return new BaseTransitionAction<>();
 	}
 	

@@ -32,7 +32,7 @@ public class OrderConfiguration {
         return flowReader;
     }
 
-    @Bean @Autowired
+    @Bean
     STMActionsInfoProvider orderActionsInfoProvider(@Qualifier("orderFlowStore") STMFlowStoreImpl stmFlowStore) {
         STMActionsInfoProvider provider = new STMActionsInfoProvider(stmFlowStore);
         WorkflowRegistry.addSTMActionsInfoProvider("order",provider);
