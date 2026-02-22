@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- An example states xml file that demonstrates the following features:
+ 1. The progression of Vehicle from OPENED to CLOSED 
+ 2. How to define and use a custom DSL to define the workflow.
+-->
+<states>
+	<default-transition-action componentName="vehicleBaseTransitionAction"/>
+    <add-state-tag tag="status" manualState="true"/>
+    <add-transition-tag tag="on-action" eventIdTag="id" newStateIdTag="move-to"
+                    />
+
+	<flow id='VehicleFlow' default='true'>
+		<entry-action componentName="vehicleEntryAction"/>
+		<exit-action componentName="vehicleExitAction"/>
+		<status id='OPENED' initialState='true'>
+			<on-action id='assign'  move-to='ASSIGNED'/>
+		</status>
+
+		<status id='ASSIGNED'>
+			<on-action id='resolve' move-to='RESOLVED' />
+		</status>
+
+        <status id='RESOLVED'>
+			<on-action id='close' move-to='CLOSED'/>
+        </status>
+        <status id='CLOSED' />
+
+
+	</flow>
+	
+</states>
