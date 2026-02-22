@@ -1,10 +1,9 @@
 package com.mycompany.myorg.vehicle.extension.configuration;
 
-import org.chenile.utils.entity.service.EntityStore;
+import com.mycompany.myorg.vehicle.extension.service.cmd.ExtVehicleAction;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.mycompany.myorg.vehicle.extension.store.VehicleExtensionEntityStore;
 import com.mycompany.myorg.vehicle.model.VehicleExtension;
 import org.springframework.http.converter.HttpMessageConverters;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
@@ -13,8 +12,6 @@ import tools.jackson.databind.cfg.DateTimeFeature;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.jsontype.NamedType;
 import tools.jackson.databind.module.SimpleModule;
-
-import java.util.Date;
 
 @Configuration
 public class VehicleExtentionConfiguration implements WebMvcConfigurer {
@@ -36,6 +33,12 @@ public class VehicleExtentionConfiguration implements WebMvcConfigurer {
         JacksonJsonHttpMessageConverter jacksonJsonHttpMessageConverter = new JacksonJsonHttpMessageConverter(jm);
 
         builder.withJsonConverter(jacksonJsonHttpMessageConverter).build();
+    }
+
+
+    @Bean
+    ExtVehicleAction vehicleExt() {
+        return new ExtVehicleAction();
     }
 
 }

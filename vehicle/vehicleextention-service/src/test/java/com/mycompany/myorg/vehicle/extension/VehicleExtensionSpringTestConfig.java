@@ -11,9 +11,8 @@ import org.springframework.test.context.ActiveProfiles;
 @Configuration
 @PropertySource("classpath:com/mycompany/myorg/vehicle/TestService.properties")
 @SpringBootApplication(scanBasePackages = {
-        "org.chenile.configuration",
-        "com.mycompany.myorg.vehicle.configuration",
-        "com.mycompany.myorg.vehicle.extension.configuration"
+        "org.chenile",
+        "com.mycompany"
 })
 @EntityScan(basePackages = "com.mycompany.myorg.vehicle.model")
 @EnableJpaRepositories(basePackages = "com.mycompany.myorg.vehicle.configuration.dao")

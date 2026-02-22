@@ -59,6 +59,7 @@ OPENED -(assign) -> ASSIGNED -(resolve) -> RESOLVED -(close) -> CLOSED
 	  And the REST response key "mutatedEntity.id" is "${id}"
 	  And the REST response key "mutatedEntity.currentState.stateId" is "CLOSED"
 	  And the REST response key "mutatedEntity.closeComment" is "OK"
+      And DB has closed base vehicle row with openedBy "USER1" description "Description" assignee "MY-ASSIGNEE" assignComment "MY-ASSIGNEE-CAN-FIX-THIS" resolveComment "CANNOT-DUPLICATE" closeComment "OK"
 
 
 Scenario: Assign a closed vehicle to someone. This will err out.

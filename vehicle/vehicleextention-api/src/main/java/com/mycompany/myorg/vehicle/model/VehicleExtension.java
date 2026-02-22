@@ -1,6 +1,5 @@
 package com.mycompany.myorg.vehicle.model;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -13,4 +12,7 @@ public class VehicleExtension extends Vehicle {
 
     @Column(name = "fitness_expiry")
     public String fitnessExpiry;
+
+    @Column(name = "new_column")
+    public String newColumn;
 }
