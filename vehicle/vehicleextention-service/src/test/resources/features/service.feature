@@ -4,7 +4,7 @@ Feature: Tests vehicle extension workflow over REST and validates DB persistence
     When I POST a REST request to URL "/vehicle" with payload
     """
     {
-      "vehicle_type": "EXT",
+      "ext_type": "client_abc_ext",
       "openedBy": "USER-EXT",
       "description": "Extension vehicle",
       "insurancePolicyNumber": "POL-999",
@@ -17,4 +17,4 @@ Feature: Tests vehicle extension workflow over REST and validates DB persistence
     And the REST response key "mutatedEntity.description" is "Extension vehicle"
     And the REST response key "mutatedEntity.insurancePolicyNumber" is "POL-999"
     And the REST response key "mutatedEntity.fitnessExpiry" is "2030-12-31"
-    And DB has vehicle extension row with policy "POL-999" fitness "2030-12-31" and type "EXT"
+    And DB has vehicle extension row with policy "POL-999" fitness "2030-12-31" and type "client_abc_ext"

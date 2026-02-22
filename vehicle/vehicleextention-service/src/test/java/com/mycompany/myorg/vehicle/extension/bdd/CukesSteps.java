@@ -26,7 +26,7 @@ public class CukesSteps {
     @Then("DB has vehicle extension row with policy {string} fitness {string} and type {string}")
     public void dbHasVehicleExtensionRow(String policy, String fitness, String type) {
         Integer count = jdbcTemplate.queryForObject(
-                "select count(*) from vehicle where insurance_policy_number = ? and fitness_expiry = ? and vehicle_type = ?",
+                "select count(*) from vehicle where insurance_policy_number = ? and fitness_expiry = ? and ext_type = ?",
                 Integer.class,
                 policy,
                 fitness,

@@ -30,7 +30,7 @@ public class VehicleExtentionConfiguration implements WebMvcConfigurer {
                 .disable(DateTimeFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS)
                 .enable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .addModule(module)
-                .registerSubtypes(new NamedType(VehicleExtension.class, "EXT"))
+                .registerSubtypes(new NamedType(VehicleExtension.class, "client_abc_ext"))
                 .build();
 
         JacksonJsonHttpMessageConverter jacksonJsonHttpMessageConverter = new JacksonJsonHttpMessageConverter(jm);
@@ -38,10 +38,4 @@ public class VehicleExtentionConfiguration implements WebMvcConfigurer {
         builder.withJsonConverter(jacksonJsonHttpMessageConverter).build();
     }
 
-
-
-    @Bean
-    EntityStore<VehicleExtension> vehicleExtensionEntityStore() {
-        return new VehicleExtensionEntityStore();
-    }
 }

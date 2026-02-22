@@ -6,7 +6,7 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 @Entity
-@DiscriminatorValue("EXT")
+@DiscriminatorValue("client_abc_ext")
 public class VehicleExtension extends Vehicle {
     @Column(name = "insurance_policy_number")
     public String insurancePolicyNumber;
