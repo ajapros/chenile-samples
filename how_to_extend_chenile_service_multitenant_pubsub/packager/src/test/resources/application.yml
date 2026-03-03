@@ -1,0 +1,37 @@
+logging:
+  level:
+    ROOT: INFO
+    org.hibernate.SQL: INFO
+    org.chenile.*: DEBUG
+
+chenile:
+  base:
+    url:
+  multids:
+    defaultTenantId: tenant1
+    datasources:
+      tenant1:
+        jdbcUrl: jdbc:h2:mem:packager-tenant1;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+        username: sa
+        password: ''
+        maximumPoolSize: '5'
+      tenant2:
+        jdbcUrl: jdbc:h2:mem:packager-tenant2;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+        username: sa
+        password: ''
+        maximumPoolSize: '5'
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  sql:
+    init:
+      mode: never
+
+pubsub:
+  topic:
+    separator: _

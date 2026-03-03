@@ -8,6 +8,7 @@
 		<module>vehicle-service</module>
 		<module>vehicleextention-api</module>
 		<module>vehicleextention-service</module>
+		<module>packager</module>
 	</modules>
 	<parent>
 		<groupId>org.chenile</groupId>
@@ -20,33 +21,38 @@
 		<revision>0.0.1-SNAPSHOT</revision>
 	</properties>
 	
-	<groupId>com.mycompany.myorg.vehicle</groupId>
+	<groupId>com.mycompany.myorg.vehicle.mt</groupId>
 	<version>${revision}</version>
-	<artifactId>vehicle-parent</artifactId>
-	<name>How to Extend Chenile Workflow Service </name>
+	<artifactId>vehicle-mt-parent</artifactId>
+	<name>How to Extend Chenile Workflow Service - Multi Tenant + JVM PubSub</name>
 	<description>Modules execution project and Parent Pom</description>
 
 	<dependencyManagement>
 	<dependencies>
 		<dependency>
-			<groupId>com.mycompany.myorg.vehicle</groupId>
+			<groupId>com.mycompany.myorg.vehicle.mt</groupId>
 			<version>${revision}</version>
-			<artifactId>vehicle-service</artifactId>
+			<artifactId>vehicle-mt-service</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.mycompany.myorg.vehicle</groupId>
+			<groupId>com.mycompany.myorg.vehicle.mt</groupId>
 			<version>${revision}</version>
-			<artifactId>vehicle-api</artifactId>
+			<artifactId>vehicle-mt-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.mycompany.myorg.vehicle</groupId>
+			<groupId>com.mycompany.myorg.vehicle.mt</groupId>
 			<version>${revision}</version>
-			<artifactId>vehicleextention-service</artifactId>
+			<artifactId>vehicle-mt-extention-service</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.mycompany.myorg.vehicle</groupId>
+			<groupId>com.mycompany.myorg.vehicle.mt</groupId>
 			<version>${revision}</version>
-			<artifactId>vehicleextention-api</artifactId>
+			<artifactId>vehicle-mt-extention-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.mycompany.myorg.vehicle.mt</groupId>
+			<version>${revision}</version>
+			<artifactId>vehicle-mt-packager</artifactId>
 		</dependency>
 	</dependencies>
 	</dependencyManagement>

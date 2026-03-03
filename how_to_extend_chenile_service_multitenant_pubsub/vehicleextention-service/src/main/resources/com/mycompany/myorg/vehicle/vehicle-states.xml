@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<states>
+
+	<flow id='VehicleFlow'>
+
+		<manual-state id='ASSIGNED'>
+			<on eventId='ext' newStateId='EXTENSION' />
+		</manual-state>
+
+		<manual-state id='EXTENSION'>
+			<on eventId='close' newStateId='CLOSED' />
+		</manual-state>
+
+	</flow>
+	
+</states>
