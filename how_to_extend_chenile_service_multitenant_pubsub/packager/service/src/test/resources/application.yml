@@ -17,12 +17,12 @@ chenile:
     defaultTenantId: tenant1
     datasources:
       tenant1:
-        jdbcUrl: jdbc:h2:mem:packager-tenant1;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+        jdbcUrl: jdbc:h2:mem:packager-tenant1;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;INIT=RUNSCRIPT FROM 'classpath:db/packager-schema.sql'
         username: sa
         password: ''
         maximumPoolSize: '5'
-      tenant2:
-        jdbcUrl: jdbc:h2:mem:packager-tenant2;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+      tenant0:
+        jdbcUrl: jdbc:h2:mem:packager-tenant0;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;INIT=RUNSCRIPT FROM 'classpath:db/packager-schema.sql'
         username: sa
         password: ''
         maximumPoolSize: '5'
@@ -30,7 +30,7 @@ chenile:
 spring:
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect

@@ -46,6 +46,8 @@ Feature: Packager multi-tenant workflow over REST, pub/sub and extension command
     And the REST response key "mutatedEntity.tenant1Code" is "BLR-01"
     And the REST response key "mutatedEntity.tenant1WorkflowNote" is "tenant1-workflow-PACKAGER-T1-EVENT"
     And pubsub receives message containing "PACKAGER-T1-EVENT" and tenant "tenant1"
+    And datasource "tenant1" contains tenant1 extension code "BLR-01"
+    And datasource "tenant0" does not contain tenant1 extension code "BLR-01"
 
   Scenario: Tenant header drives tenant0 extension workflow and publishes tenant-aware event
     When I construct a REST request with header "x-chenile-tenant-id" and value "tenant0"
@@ -92,3 +94,5 @@ Feature: Packager multi-tenant workflow over REST, pub/sub and extension command
     And the REST response key "mutatedEntity.newColumn" is "PACKAGER-T0-EVENT"
     And the REST response key "mutatedEntity.tenant0WorkflowNote" is "tenant0-workflow-PACKAGER-T0-EVENT"
     And pubsub receives message containing "PACKAGER-T0-EVENT" and tenant "tenant0"
+    And datasource "tenant0" contains tenant0 extension code "T0-001"
+    And datasource "tenant1" does not contain tenant0 extension code "T0-001"
