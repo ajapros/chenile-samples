@@ -4,10 +4,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	<packaging>pom</packaging>
 	<modules>
-		<module>vehicle-api</module>
-		<module>vehicle-service</module>
-		<module>vehicleextention-api</module>
-		<module>vehicleextention-service</module>
+		<module>vehicle</module>
+		<module>custom-tenant0</module>
+		<module>custom-tenant1</module>
 		<module>packager</module>
 	</modules>
 	<parent>
@@ -42,12 +41,22 @@
 		<dependency>
 			<groupId>com.mycompany.myorg.vehicle.mt</groupId>
 			<version>${revision}</version>
-			<artifactId>vehicle-mt-extention-service</artifactId>
+			<artifactId>vehicle-mt-custom-tenant0-service</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.mycompany.myorg.vehicle.mt</groupId>
 			<version>${revision}</version>
-			<artifactId>vehicle-mt-extention-api</artifactId>
+			<artifactId>vehicle-mt-custom-tenant0-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.mycompany.myorg.vehicle.mt</groupId>
+			<version>${revision}</version>
+			<artifactId>vehicle-mt-custom-tenant1-service</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.mycompany.myorg.vehicle.mt</groupId>
+			<version>${revision}</version>
+			<artifactId>vehicle-mt-custom-tenant1-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.mycompany.myorg.vehicle.mt</groupId>

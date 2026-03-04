@@ -11,11 +11,12 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>vehicle-mt-packager-parent</artifactId>
+    <artifactId>vehicle-mt-custom-tenant0-parent</artifactId>
     <packaging>pom</packaging>
-    <name>Packager Sub Parent</name>
+    <name>Custom Tenant0 Sub Parent</name>
 
     <modules>
+        <module>api</module>
         <module>service</module>
     </modules>
 </project>

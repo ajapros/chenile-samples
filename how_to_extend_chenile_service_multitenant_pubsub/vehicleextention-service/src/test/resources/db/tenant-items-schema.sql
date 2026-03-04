@@ -1,6 +1,0 @@
-DROP TABLE IF EXISTS tenant_items;
-CREATE TABLE tenant_items (
-  id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(100) NOT NULL,
-  tenant VARCHAR(64) NOT NULL
-);

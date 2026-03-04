@@ -12,27 +12,31 @@ Project root modules:
 
 - `vehicle-api`: base workflow entity and payload contracts
 - `vehicle-service`: base workflow implementation and controller
-- `vehicleextention-api`: extension entities
-  - `VehicleExtension` (`ext_type=client_abc_ext`)
-  - `VehicleExtensionClientXyz` (`ext_type=client_xyz_ext`)
-- `vehicleextention-service`: extension workflow + multi-tenant + pub/sub tests
+- `custom-tenant0-api`: tenant0 extension entity (`VehicleExtensionClientXyz`, `ext_type=client_xyz_ext`)
+- `custom-tenant0-service`: shared/tenant0 workflow extension + multi-tenant + pub/sub tests
+- `custom-tenant1-api`: tenant1 extension entity (`VehicleExtension`, `ext_type=client_abc_ext`)
+- `custom-tenant1-service`: tenant1-specific transition action wiring (`tenant1VehicleExt`)
 - `packager`: integration-test module that packages both extensions and validates end-to-end behavior
 
 ## How Workflow Extension Is Implemented
 
 Base workflow (in `vehicle-service`) supports the original flow.
 
-Extension workflow (in `vehicleextention-service`) adds extension transitions in:
+Extension workflow (in `custom-tenant0-service`) adds extension transitions in:
 
-- `vehicleextention-service/src/main/resources/com/mycompany/myorg/vehicle/vehicle-states.xml`
+- `custom-tenant0-service/src/main/resources/com/mycompany/myorg/vehicle/vehicle-states.xml`
 
 Subtype registration is wired in:
 
-- `vehicleextention-service/src/main/java/com/mycompany/myorg/vehicle/extension/configuration/VehicleExtentionConfiguration.java`
+- `custom-tenant0-service/src/main/java/com/mycompany/myorg/vehicle/extension/configuration/VehicleExtentionConfiguration.java`
+
+Tenant1-specific action bean is wired in:
+
+- `custom-tenant1-service/src/main/java/com/mycompany/myorg/vehicle/extension/configuration/Tenant1VehicleConfiguration.java`
 
 Extension transition logic is in:
 
-- `vehicleextention-service/src/main/java/com/mycompany/myorg/vehicle/extension/service/cmd/ExtVehicleAction.java`
+- `custom-tenant0-service/src/main/java/com/mycompany/myorg/vehicle/extension/service/cmd/ExtVehicleAction.java`
 
 The `ext` command now:
 
@@ -48,7 +52,7 @@ Multi-tenant datasource routing is enabled in test runtime by importing:
 
 Tenant datasource definitions are in:
 
-- `vehicleextention-service/src/test/resources/application.yml`
+- `custom-tenant0-service/src/test/resources/application.yml`
 - `packager/src/test/resources/application.yml`
 
 Configured tenants:
@@ -72,11 +76,11 @@ Subscriber controller and service (test scope) are used for integration verifica
 
 ## Test Coverage
 
-### 1. Extension workflow + publish-on-command (`vehicleextention-service`)
+### 1. Extension workflow + publish-on-command (`custom-tenant0-service`)
 
 Feature file:
 
-- `vehicleextention-service/src/test/resources/features/service.feature`
+- `custom-tenant0-service/src/test/resources/features/service.feature`
 
 Includes scenarios for:
 
@@ -85,11 +89,11 @@ Includes scenarios for:
 - tenant header propagation in publish/receive path
 - second extension subtype flow (`client_xyz_ext`)
 
-### 2. Multi-tenant datasource routing checks (`vehicleextention-service`)
+### 2. Multi-tenant datasource routing checks (`custom-tenant0-service`)
 
 Feature file:
 
-- `vehicleextention-service/src/test/resources/features/multi-tenant-routing.feature`
+- `custom-tenant0-service/src/test/resources/features/multi-tenant-routing.feature`
 
 Validates:
 
@@ -114,7 +118,7 @@ Validates:
 From project root, run extension-service tests:
 
 ```bash
-mvn -pl vehicleextention-service -am test
+mvn -pl custom-tenant0-service -am test
 ```
 
 Run packager integration tests:
@@ -131,4 +135,4 @@ You should see:
 - second extension subtype (`client_xyz_ext`) working
 - tenant-based routing checks passing
 - pub/sub event emitted from workflow command and consumed by subscriber
-- all tests passing in `vehicleextention-service` and `packager`
+- all tests passing in `custom-tenant0-service` and `packager`
