@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ExtVehicleAction extends AbstractSTMTransitionAction<Vehicle, MinimalPayload> {
+public class Tenant0ExtVehicleAction extends AbstractSTMTransitionAction<VehicleExtensionTenant0, MinimalPayload> {
 
     private ChenilePub chenilePub;
 
@@ -25,18 +25,16 @@ public class ExtVehicleAction extends AbstractSTMTransitionAction<Vehicle, Minim
     }
 
     @Override
-    public void transitionTo(Vehicle vehicle, MinimalPayload payload, State startState, String eventId,
+    public void transitionTo(VehicleExtensionTenant0 vehicle, MinimalPayload payload, State startState, String eventId,
                              State endState, STMInternalTransitionInvoker<?> stm, Transition transition) throws Exception {
         applyExtComment(vehicle, payload);
         publishWorkflowEvent(vehicle, payload);
     }
 
-    private void applyExtComment(Vehicle vehicle, MinimalPayload payload) {
+    private void applyExtComment(VehicleExtensionTenant0 tenant0Vehicle, MinimalPayload payload) {
         String comment = payload == null ? null : payload.getComment();
-        if (vehicle instanceof VehicleExtensionTenant0 tenant0Vehicle) {
-            tenant0Vehicle.newColumn = comment;
-            tenant0Vehicle.tenant0WorkflowNote = comment == null ? null : "tenant0-workflow-" + comment;
-        }
+        tenant0Vehicle.newColumn = comment;
+        tenant0Vehicle.tenant0WorkflowNote = comment == null ? null : "tenant0-workflow-" + comment;
     }
 
     private void publishWorkflowEvent(Vehicle vehicle, MinimalPayload payload) {

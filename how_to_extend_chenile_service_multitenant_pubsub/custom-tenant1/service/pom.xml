@@ -30,11 +30,6 @@
             <version>${chenile.messaging.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.mycompany.myorg.vehicle.mt</groupId>
-            <artifactId>vehicle-mt-custom-tenant0-service</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.chenile</groupId>
             <artifactId>chenile-jvm-pub-sub</artifactId>
             <version>${chenile.messaging.version}</version>
