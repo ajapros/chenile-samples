@@ -11,21 +11,16 @@ chenile:
         className: com.mycompany.myorg.vehicle.model.VehicleExtensionTenant1
   base:
     url:
-  multids:
-    defaultTenantId: tenant1
-    datasources:
-      tenant1:
-        jdbcUrl: jdbc:h2:mem:tenant1;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-        username: sa
-        password: ''
-        maximumPoolSize: '5'
-      tenant2:
-        jdbcUrl: jdbc:h2:mem:tenant2;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-        username: sa
-        password: ''
-        maximumPoolSize: '5'
 
 spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:h2:mem:demo;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: ''
+    hikari:
+      poolName: Hikari
+      auto-commit: false
   jpa:
     hibernate:
       ddl-auto: update

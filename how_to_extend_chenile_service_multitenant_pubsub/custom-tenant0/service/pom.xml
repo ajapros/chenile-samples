@@ -30,12 +30,6 @@
         </dependency>
         <dependency>
             <groupId>org.chenile</groupId>
-            <artifactId>multi-datasource-utils</artifactId>
-            <version>${chenile.core.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.chenile</groupId>
             <artifactId>chenile-jvm-pub-sub</artifactId>
             <version>${chenile.messaging.version}</version>
             <scope>test</scope>

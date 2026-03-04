@@ -1,6 +1,5 @@
 package com.mycompany.myorg.vehicle.tenant1;
 
-import org.chenile.configuration.multids.MultiTenantDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -18,7 +17,6 @@ import org.springframework.test.context.ActiveProfiles;
 })
 @EntityScan(basePackages = "com.mycompany.myorg.vehicle")
 @EnableJpaRepositories(basePackages = "com.mycompany.myorg.vehicle")
-@Import(MultiTenantDataSourceConfiguration.class)
 @ActiveProfiles("unittest")
 public class VehicleTenant1SpringTestConfig extends SpringBootServletInitializer {
 }
