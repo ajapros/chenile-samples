@@ -5,6 +5,10 @@ logging:
     org.chenile.*: DEBUG
 
 chenile:
+  http:
+    extension-subtypes:
+      - name: tenant1_ext
+        className: com.mycompany.myorg.vehicle.model.VehicleExtensionTenant1
   base:
     url:
   multids:

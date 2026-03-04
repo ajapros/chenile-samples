@@ -8,8 +8,21 @@ import org.chenile.stm.spring.SpringBeanFactoryAdapter;
 import org.chenile.workflow.param.MinimalPayload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.http.converter.HttpMessageConverters;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import tools.jackson.databind.cfg.DateTimeFeature;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.jsontype.NamedType;
+import tools.jackson.databind.module.SimpleModule;
+
+import java.util.List;
+import java.util.Map;
 
 import org.chenile.utils.entity.service.EntityStore;
 import org.chenile.workflow.service.impl.StateEntityServiceImpl;
@@ -27,8 +40,48 @@ import org.chenile.workflow.api.WorkflowRegistry;
  This is where you will instantiate all the required classes in Spring
 */
 @Configuration
-public class VehicleConfiguration {
+public class VehicleConfiguration implements WebMvcConfigurer {
 	private static final String FLOW_DEFINITION_FILE = "com/mycompany/myorg/vehicle/vehicle-states.xml";
+
+    @Autowired
+    private Environment environment;
+
+    @Override
+    public void configureMessageConverters(HttpMessageConverters.ServerBuilder builder) {
+        SimpleModule module = new SimpleModule();
+
+        JsonMapper.Builder mapperBuilder = JsonMapper.builder()
+                .disable(DateTimeFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS)
+                .disable(DateTimeFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS)
+                .enable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .addModule(module);
+
+        List<Map> subtypes = Binder.get(environment)
+                .bind("chenile.http.extension-subtypes", Bindable.listOf(Map.class))
+                .orElse(List.of());
+
+        for (Map subtype : subtypes) {
+            Object classNameObj = subtype.get("className");
+            Object nameObj = subtype.get("name");
+            String className = classNameObj == null ? null : classNameObj.toString();
+            String name = nameObj == null ? null : nameObj.toString();
+            if (className == null || className.isBlank() || name == null || name.isBlank()) {
+                continue;
+            }
+            try {
+                Class<?> candidateClass = Class.forName(className);
+                if (Vehicle.class.isAssignableFrom(candidateClass)) {
+                    mapperBuilder.registerSubtypes(new NamedType(candidateClass, name));
+                }
+            } catch (ClassNotFoundException ignored) {
+                // The class may not be present for a tenant module not included in this runtime.
+            }
+        }
+
+        JacksonJsonHttpMessageConverter jacksonJsonHttpMessageConverter =
+                new JacksonJsonHttpMessageConverter(mapperBuilder.build());
+        builder.withJsonConverter(jacksonJsonHttpMessageConverter).build();
+    }
 	
 	@Bean BeanFactoryAdapter vehicleBeanFactoryAdapter() {
 		return new SpringBeanFactoryAdapter();

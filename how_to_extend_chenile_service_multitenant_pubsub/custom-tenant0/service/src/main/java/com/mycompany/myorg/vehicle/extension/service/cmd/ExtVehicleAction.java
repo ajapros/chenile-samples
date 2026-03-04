@@ -2,7 +2,6 @@ package com.mycompany.myorg.vehicle.extension.service.cmd;
 
 import com.mycompany.myorg.vehicle.model.Vehicle;
 import com.mycompany.myorg.vehicle.model.VehicleExtensionTenant0;
-import com.mycompany.myorg.vehicle.model.VehicleExtensionTenant1;
 import org.chenile.core.context.ContextContainer;
 import org.chenile.core.context.HeaderUtils;
 import org.chenile.pubsub.ChenilePub;
@@ -37,11 +36,6 @@ public class ExtVehicleAction extends AbstractSTMTransitionAction<Vehicle, Minim
         if (vehicle instanceof VehicleExtensionTenant0 tenant0Vehicle) {
             tenant0Vehicle.newColumn = comment;
             tenant0Vehicle.tenant0WorkflowNote = comment == null ? null : "tenant0-workflow-" + comment;
-            return;
-        }
-        if (vehicle instanceof VehicleExtensionTenant1 tenant1Vehicle) {
-            tenant1Vehicle.newColumn = comment;
-            tenant1Vehicle.tenant1WorkflowNote = comment == null ? null : "tenant1-workflow-" + comment;
         }
     }
 

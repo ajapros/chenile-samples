@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class Tenant1VehicleConfiguration {
-
     @Bean("tenant1VehicleExt")
     Tenant1ExtVehicleAction tenant1VehicleExt() {
         return new Tenant1ExtVehicleAction();
