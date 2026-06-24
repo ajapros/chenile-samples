@@ -1,0 +1,10 @@
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: scheduled-report-postgres-auth
+  namespace: chenile-scheduler-sample
+spec:
+  secretTargetRef:
+    - parameter: connection
+      name: scheduler-sample-secret
+      key: POSTGRES_CONNECTION_STRING

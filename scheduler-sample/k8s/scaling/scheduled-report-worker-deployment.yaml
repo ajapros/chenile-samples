@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scheduled-report-worker
+  namespace: chenile-scheduler-sample
+  labels:
+    app.kubernetes.io/name: scheduled-report-worker
+    app.kubernetes.io/part-of: chenile-scheduler-sample
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: scheduled-report-worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: scheduled-report-worker
+        app.kubernetes.io/part-of: chenile-scheduler-sample
+    spec:
+      serviceAccountName: scheduled-report-worker
+      containers:
+        - name: worker
+          image: example.com/chenile/scheduler-sample:0.0.1
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: scheduler-sample-config
+            - secretRef:
+                name: scheduler-sample-secret
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "postgres,worker"
+            - name: CHENILE_SCHEDULER_JSON_PACKAGE
+              value: ""
+            - name: SCHEDULER_SAMPLE_WORKER_ENABLED
+              value: "true"
+            - name: SCHEDULER_SAMPLE_WORKER_RUN_ONCE
+              value: "false"
+            - name: SCHEDULER_SAMPLE_WORKER_LOCK_SECONDS
+              value: "120"
+            - name: SCHEDULER_SAMPLE_WORKER_POLL_INTERVAL_MILLIS
+              value: "5000"
+            - name: SCHEDULER_SAMPLE_WORKER_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scheduler-sample-config
+  namespace: chenile-scheduler-sample
+data:
+  SPRING_PROFILES_ACTIVE: "jdbc"
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://scheduler-postgres:5432/scheduler"
+  SPRING_DATASOURCE_USERNAME: "scheduler"
+  CHENILE_SCHEDULER_LAUNCHER_DEFAULT: "local"
+  CHENILE_SCHEDULER_STORE_TYPE: "jdbc"

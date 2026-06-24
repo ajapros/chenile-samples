@@ -1,0 +1,24 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: scheduled-report-worker
+  namespace: chenile-scheduler-sample
+spec:
+  scaleTargetRef:
+    name: scheduled-report-worker
+  pollingInterval: 30
+  cooldownPeriod: 60
+  minReplicaCount: 0
+  maxReplicaCount: 10
+  triggers:
+    - type: postgresql
+      authenticationRef:
+        name: scheduled-report-postgres-auth
+      metadata:
+        targetQueryValue: "1"
+        activationTargetQueryValue: "0"
+        query: >-
+          select coalesce(count(*), 0)
+            from chenile_scheduler_work_item
+           where status = 'PENDING'
+              or (status = 'RUNNING' and locked_until < now())

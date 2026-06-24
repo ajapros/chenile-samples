@@ -1,0 +1,13 @@
+{
+  "serviceName": "scheduledReportService",
+  "operationName": "generate",
+  "cronSchedule": "0/30 * * * * ? *",
+  "jobName": "jdbc-report",
+  "jobDescription": "Runs the scheduled report in the same JVM and records execution status in JDBC.",
+  "triggerName": "jdbc-report-trigger",
+  "triggerGroup": "scheduler-sample",
+  "launcher": "local",
+  "retryCount": 1,
+  "timeoutSeconds": 10,
+  "payload": "{ \"reportName\": \"daily-sales\", \"businessDate\": \"2026-06-23\" }"
+}

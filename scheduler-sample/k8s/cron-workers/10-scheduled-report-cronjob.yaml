@@ -1,0 +1,52 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: scheduled-report-worker
+  namespace: chenile-scheduler-sample
+  labels:
+    app.kubernetes.io/name: scheduled-report-worker
+    app.kubernetes.io/part-of: chenile-scheduler-sample
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 120
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 300
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: scheduled-report-worker
+            app.kubernetes.io/part-of: chenile-scheduler-sample
+        spec:
+          serviceAccountName: scheduled-report-worker
+          restartPolicy: Never
+          containers:
+            - name: worker
+              image: example.com/chenile/scheduled-report-worker:0.0.1
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: CHENILE_SCHEDULER_EXECUTION_ID
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+                - name: CHENILE_SCHEDULER_JOB_NAME
+                  value: "scheduled-report-worker"
+                - name: CHENILE_SCHEDULER_WORKER
+                  value: "scheduled-report-worker"
+                - name: CHENILE_SCHEDULER_SERVICE_NAME
+                  value: "scheduledReportService"
+                - name: CHENILE_SCHEDULER_OPERATION_NAME
+                  value: "generate"
+                - name: CHENILE_SCHEDULER_PAYLOAD
+                  value: '{ "reportName": "daily-inventory", "businessDate": "2026-06-23" }'
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 128Mi
+                limits:
+                  cpu: 500m
+                  memory: 512Mi
