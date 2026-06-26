@@ -17,7 +17,6 @@
         <dependency>
             <groupId>org.chenile</groupId>
             <artifactId>chenile-security-starter-resource-server</artifactId>
-            
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -42,4 +41,21 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>repackage</id>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
