@@ -1,0 +1,43 @@
+chenile:
+  security:
+    gateway:
+      auth-server:
+        uri: http://auth-server:9000
+      security:
+        issuer-base: http://localhost:9000
+        jwk-base-uri: http://auth-server:9000
+      relay:
+        forward-authorization: true
+        headers:
+          - name: x-tenant-id
+            claim: tenant
+          - name: x-user-id
+            claim: user_id
+          - name: x-acls
+            claim: acls
+          - name: x-chenile-tenant-id
+            claim: tenant
+          - name: x-chenile-auth-user
+            claim: user_id
+          - name: x-chenile-deviceid
+            claim: device_id
+          - name: x-vymo-user-details
+            claim: user_details
+            format: json
+          - name: x-vymo-locale
+            claim: locale
+          - name: vymo-locale
+            claim: vymo_locale
+      routes:
+        - id: service-a
+          paths:
+            - /api/a/**
+          uri: http://service-a:8081
+          rewrite-regex: /api/a/(?<segment>.*)
+          rewrite-replacement: /api/a/${segment}
+        - id: service-b
+          paths:
+            - /api/b/**
+          uri: http://service-b:8082
+          rewrite-regex: /api/b/(?<segment>.*)
+          rewrite-replacement: /api/b/${segment}

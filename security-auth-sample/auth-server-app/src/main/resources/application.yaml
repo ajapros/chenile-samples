@@ -1,0 +1,45 @@
+chenile:
+  security:
+    auth-server:
+      token:
+        audiences:
+          gateway.access: gateway
+          service-a.read: service-a
+          service-b.read: service-b
+      demo:
+        credentials:
+          - email: gaurav.bhardwaj@getvymo.com
+            password: Alpha#Pass1
+            otp: "246810"
+            google: Enabled for tenant-alpha and platform flows
+          - email: bob@tenant-beta.local
+            password: Bravo#Pass2
+            otp: Use password flow
+            google: not-enabled
+          - email: gaurav.bhardwaj@getvymo.com
+            password: Admin#Pass3
+            otp: Use password flow
+            google: Enabled for tenant-alpha and platform flows
+        services:
+          - service: gateway
+            scope: gateway.access
+            audience: gateway
+          - service: service-a
+            scope: service-a.read
+            audience: service-a
+          - service: service-b
+            scope: service-b.read
+            audience: service-b
+        scenarios:
+          - key: tenant-alpha-user
+            label: Tenant Alpha / Alice
+            email: alice@tenant-alpha.local
+            client-id: browser-login
+          - key: tenant-beta-user
+            label: Tenant Beta / Bob
+            email: bob@tenant-beta.local
+            client-id: browser-login
+          - key: platform-admin
+            label: Platform / Ops Admin
+            email: ops-admin@platform.local
+            client-id: browser-login
