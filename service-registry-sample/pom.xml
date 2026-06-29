@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.chenile</groupId>
+        <artifactId>chenile-parent</artifactId>
+        <version>2.1.24</version>
+    </parent>
+
+    <groupId>org.chenile.samples</groupId>
+    <artifactId>service-registry-sample-parent</artifactId>
+    <version>${revision}</version>
+    <packaging>pom</packaging>
+    <name>Chenile Service Registry Sample</name>
+
+    <properties>
+        <revision>0.0.1-SNAPSHOT</revision>
+    </properties>
+
+    <modules>
+        <module>registry-app</module>
+        <module>mock-orders-service</module>
+        <module>mock-payments-service</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.chenile</groupId>
+                <artifactId>chenile-admin-ui</artifactId>
+                <version>${chenile.core.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>

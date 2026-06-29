@@ -1,0 +1,12 @@
+server:
+  port: ${SERVER_PORT:8091}
+
+spring:
+  application:
+    name: service-registry-sample-orders
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

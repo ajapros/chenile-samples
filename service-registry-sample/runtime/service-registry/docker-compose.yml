@@ -1,0 +1,84 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: service_registry
+      POSTGRES_USER: registry_user
+      POSTGRES_PASSWORD: registry_pass
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U registry_user -d service_registry"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    ports:
+      - "15433:5432"
+    volumes:
+      - service_registry_data:/var/lib/postgresql/data
+
+  registry-app:
+    build:
+      context: ../../../..
+      dockerfile: chenile-samples/service-registry-sample/runtime/Dockerfile
+      args:
+        MODULE: registry-app
+    environment:
+      SERVER_PORT: 8090
+      CHENILE_BASE_URL: http://localhost:8090
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/service_registry
+      SPRING_DATASOURCE_USERNAME: registry_user
+      SPRING_DATASOURCE_PASSWORD: registry_pass
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8090/actuator/health | grep -q UP"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    ports:
+      - "8090:8090"
+
+  mock-orders-service:
+    build:
+      context: ../../../..
+      dockerfile: chenile-samples/service-registry-sample/runtime/Dockerfile
+      args:
+        MODULE: mock-orders-service
+    environment:
+      SERVER_PORT: 8091
+      CHENILE_BASE_URL: http://localhost:8091
+      CHENILE_REMOTE_SERVICE_REGISTRY: http://registry-app:8090
+    depends_on:
+      registry-app:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8091/actuator/health | grep -q UP"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    ports:
+      - "8091:8091"
+
+  mock-payments-service:
+    build:
+      context: ../../../..
+      dockerfile: chenile-samples/service-registry-sample/runtime/Dockerfile
+      args:
+        MODULE: mock-payments-service
+    environment:
+      SERVER_PORT: 8092
+      CHENILE_BASE_URL: http://localhost:8092
+      CHENILE_REMOTE_SERVICE_REGISTRY: http://registry-app:8090
+    depends_on:
+      registry-app:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8092/actuator/health | grep -q UP"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    ports:
+      - "8092:8092"
+
+volumes:
+  service_registry_data:

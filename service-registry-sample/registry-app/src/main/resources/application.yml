@@ -1,0 +1,26 @@
+server:
+  port: ${SERVER_PORT:8090}
+
+spring:
+  application:
+    name: service-registry-sample-registry
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:15433/service_registry}
+    username: ${SPRING_DATASOURCE_USERNAME:registry_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:registry_pass}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+  liquibase:
+    enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    org.chenile.service.registry: INFO
