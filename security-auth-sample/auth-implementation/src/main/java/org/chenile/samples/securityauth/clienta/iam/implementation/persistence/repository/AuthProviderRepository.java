@@ -25,12 +25,25 @@ public interface AuthProviderRepository extends JpaRepository<AuthProviderEntity
             join fetch p.user u
             join fetch u.realm r
             left join fetch u.acls a
-            where p.id = :providerId
+            where p.externalId = :providerId
               and lower(u.email) = lower(:email)
               and u.enabled = true
               and p.enabled = true
             """)
     Optional<AuthProviderEntity> findResolvedProvider(
-            @Param("providerId") long providerId,
+            @Param("providerId") String providerId,
             @Param("email") String email);
+
+    @Query("""
+            select p from AuthProviderEntity p
+            join fetch p.user u
+            join fetch u.realm r
+            where u.id = :userId
+              and p.providerKey = :providerKey
+              and p.enabled = true
+              and u.enabled = true
+            """)
+    Optional<AuthProviderEntity> findActiveProviderForUser(
+            @Param("userId") long userId,
+            @Param("providerKey") String providerKey);
 }

@@ -1,5 +1,5 @@
 export type ProviderOption = {
-  id: number;
+  id: string;
   providerKey: string;
   providerLabel: string;
   providerType: string;
@@ -17,7 +17,7 @@ export type IdentifyResponse = {
   };
   providers: ProviderOption[];
   nextStep: "authenticate" | "select-provider";
-  autoSelectedProviderId: number | null;
+  autoSelectedProviderId: string | null;
   credentialHints: {
     email: string;
     password: string;
@@ -37,7 +37,7 @@ export type AuthResponse = {
     issuer: string;
   };
   user: {
-    id: number;
+    id: string;
     username: string;
     email: string;
   };
@@ -50,6 +50,35 @@ export type AuthResponse = {
   };
 };
 
+export type MfaChallengeResponse = {
+  generatedAt: string;
+  nextStep: "mfa";
+  challengeId: string;
+  expiresAt: string;
+  provider: {
+    providerKey: string;
+    providerType: string;
+    providerLabel: string;
+    destinationHint: string;
+  };
+  tenant: {
+    realm: string;
+    displayName: string;
+    issuer: string;
+  };
+  user: {
+    id: string;
+    username: string;
+    email: string;
+  };
+  authentication: {
+    clientId: string;
+    provider: ProviderOption;
+  };
+};
+
+export type LoginResponse = AuthResponse | MfaChallengeResponse;
+
 export type ServiceMeResponse = {
   generatedAt: string;
   tenant: {
@@ -57,7 +86,7 @@ export type ServiceMeResponse = {
     issuer: string;
   };
   user: {
-    id: number;
+    id: string;
     username: string;
     email: string;
   };
@@ -65,6 +94,8 @@ export type ServiceMeResponse = {
     providerKey: string;
     providerType: string;
     clientId: string;
+    mfa: boolean;
+    amr: string[];
   };
   access: {
     scopes: string[];

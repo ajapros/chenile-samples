@@ -20,11 +20,13 @@ services:
       args:
         MODULE: auth-server-app
     environment:
-      SERVER_PORT: 9000
+      SPRING_CONFIG_ADDITIONAL_LOCATION: file:/config/auth-server-config.yml
       CHENILE_SECURITY_ISSUER_BASE: http://localhost:9000
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/auth_server
       SPRING_DATASOURCE_USERNAME: auth_user
       SPRING_DATASOURCE_PASSWORD: auth_pass
+    volumes:
+      - ../config/auth-server-config.yml:/config/auth-server-config.yml:ro
     depends_on:
       postgres:
         condition: service_healthy
@@ -38,9 +40,12 @@ services:
       args:
         MODULE: service-a
     environment:
+      SPRING_CONFIG_ADDITIONAL_LOCATION: file:/config/service-a-config.yml
       CHENILE_SECURITY_JWT_ISSUER_BASE: http://localhost:9000
       CHENILE_SECURITY_JWT_JWK_BASE_URI: http://auth-server:9000
       SAMPLE_SECURITY_SERVICE_B_URI: http://service-b:8082
+    volumes:
+      - ../config/service-a-config.yml:/config/service-a-config.yml:ro
     depends_on:
       - auth-server
     ports:
@@ -53,8 +58,11 @@ services:
       args:
         MODULE: service-b
     environment:
+      SPRING_CONFIG_ADDITIONAL_LOCATION: file:/config/service-b-config.yml
       CHENILE_SECURITY_JWT_ISSUER_BASE: http://localhost:9000
       CHENILE_SECURITY_JWT_JWK_BASE_URI: http://auth-server:9000
+    volumes:
+      - ../config/service-b-config.yml:/config/service-b-config.yml:ro
     depends_on:
       - auth-server
     ports:

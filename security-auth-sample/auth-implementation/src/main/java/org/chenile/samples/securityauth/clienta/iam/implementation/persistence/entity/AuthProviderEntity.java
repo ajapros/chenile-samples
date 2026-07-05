@@ -28,6 +28,9 @@ public class AuthProviderEntity {
     @Column(name = "provider_key", nullable = false)
     private String providerKey;
 
+    @Column(name = "external_id", nullable = false, unique = true)
+    private String externalId;
+
     @Column(name = "provider_label", nullable = false)
     private String providerLabel;
 
@@ -62,6 +65,14 @@ public class AuthProviderEntity {
 
     public void setProviderKey(String providerKey) {
         this.providerKey = providerKey;
+    }
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 
     public String getProviderLabel() {

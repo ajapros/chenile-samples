@@ -29,6 +29,9 @@ public class AuthUserEntity {
     @Column(nullable = false)
     private String username;
 
+    @Column(name = "external_id", nullable = false, unique = true)
+    private String externalId;
+
     @Column(nullable = false)
     private String email;
 
@@ -59,6 +62,14 @@ public class AuthUserEntity {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 
     public String getEmail() {

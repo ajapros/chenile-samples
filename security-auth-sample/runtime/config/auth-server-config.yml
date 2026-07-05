@@ -1,5 +1,21 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: security-auth-sample-auth-server
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
 chenile:
   security:
+    issuer-base: ${CHENILE_SECURITY_ISSUER_BASE:http://localhost:9000}
+    demo-ui:
+      success-uri: ${CHENILE_SECURITY_DEMO_UI_SUCCESS_URI:http://localhost:5173/}
     auth-server:
       token:
         audiences:
@@ -43,3 +59,9 @@ chenile:
             label: Platform / Ops Admin
             email: ops-admin@platform.local
             client-id: browser-login
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus

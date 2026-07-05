@@ -11,12 +11,13 @@ import {
   fetchServiceAFlow,
   identifyEmail,
   startGoogleLogin,
+  verifyMfa,
 } from "./lib/api";
-import type { AuthResponse, DemoUser, IdentifyResponse, ServiceAResponse, ServiceMeResponse, StoredSession } from "./types";
+import type { AuthResponse, DemoUser, IdentifyResponse, MfaChallengeResponse, ServiceAResponse, ServiceMeResponse, StoredSession } from "./types";
 
 const SESSION_STORAGE_KEY = "iam-demo-session";
 
-type LoginStage = "identify" | "select-provider" | "authenticate";
+type LoginStage = "identify" | "select-provider" | "authenticate" | "mfa";
 
 export function App() {
   const [session, setSession] = useState<StoredSession | null>(() => readStoredSession());
@@ -25,8 +26,10 @@ export function App() {
   const [demoUsers, setDemoUsers] = useState<DemoUser[]>([]);
   const [email, setEmail] = useState("");
   const [identifyResult, setIdentifyResult] = useState<IdentifyResponse | null>(null);
-  const [selectedProviderId, setSelectedProviderId] = useState<number | null>(null);
+  const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null);
   const [credential, setCredential] = useState("");
+  const [mfaCode, setMfaCode] = useState("");
+  const [mfaChallenge, setMfaChallenge] = useState<MfaChallengeResponse | null>(null);
   const [loginStage, setLoginStage] = useState<LoginStage>("identify");
   const [loading, setLoading] = useState(false);
   const [bootLoading, setBootLoading] = useState(true);
@@ -55,10 +58,48 @@ export function App() {
   useEffect(() => {
     const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
     const accessToken = hash.get("access_token");
+    const nextStep = hash.get("next_step");
+    const challengeId = hash.get("challenge_id");
+    const callbackEmail = hash.get("email");
     const errorMessage = hash.get("error");
 
     if (errorMessage) {
       setError(decodeURIComponent(errorMessage));
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+      setBootLoading(false);
+      return;
+    }
+
+    if (nextStep === "mfa" && challengeId) {
+      setEmail(callbackEmail ? decodeURIComponent(callbackEmail) : "");
+      setMfaChallenge({
+        generatedAt: new Date().toISOString(),
+        nextStep: "mfa",
+        challengeId: decodeURIComponent(challengeId),
+        expiresAt: "",
+        provider: {
+          providerKey: "external-mfa",
+          providerType: "OTP",
+          providerLabel: "MFA",
+          destinationHint: "Complete the configured second factor",
+        },
+        tenant: { realm: "", displayName: "", issuer: "" },
+        user: { id: "", username: "", email: callbackEmail ? decodeURIComponent(callbackEmail) : "" },
+        authentication: {
+          clientId: "browser-login",
+          provider: {
+            id: "",
+            providerKey: "google",
+            providerLabel: "Google",
+            providerType: "GOOGLE",
+            realm: "",
+            realmDisplayName: "",
+            username: "",
+            email: callbackEmail ? decodeURIComponent(callbackEmail) : "",
+          },
+        },
+      });
+      setLoginStage("mfa");
       window.history.replaceState(null, "", window.location.pathname + window.location.search);
       setBootLoading(false);
       return;
@@ -90,7 +131,7 @@ export function App() {
           authentication: {
             clientId: currentUser.authentication.clientId,
             provider: {
-              id: 0,
+              id: "",
               providerKey: currentUser.authentication.providerKey,
               providerLabel: currentUser.authentication.providerKey,
               providerType: currentUser.authentication.providerType,
@@ -160,6 +201,8 @@ export function App() {
     setIdentifyResult(null);
     setSelectedProviderId(null);
     setCredential("");
+    setMfaCode("");
+    setMfaChallenge(null);
     setLoginStage("identify");
     setEmail("");
   }
@@ -213,21 +256,52 @@ export function App() {
         return;
       }
       const auth = await authenticateWithProvider(identifyResult.email, selectedProviderId, credential);
-      const nextSession: StoredSession = {
-        accessToken: auth.accessToken,
-        auth,
-      };
-      window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(nextSession));
-      setSession(nextSession);
-      const currentUser = await fetchCurrentUser(nextSession.accessToken);
-      const serviceAResponse = await fetchServiceAFlow(nextSession.accessToken);
-      setServiceData(currentUser);
-      setServiceAData(serviceAResponse);
+      if (isMfaChallenge(auth)) {
+        setMfaChallenge(auth);
+        setMfaCode("");
+        setLoginStage("mfa");
+        return;
+      }
+      await completeLogin(auth);
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "Authentication failed");
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleMfaSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!mfaChallenge) {
+      setError("MFA challenge is missing");
+      return;
+    }
+    setLoading(true);
+    setError("");
+
+    try {
+      const auth = await verifyMfa(mfaChallenge.challengeId, mfaCode);
+      await completeLogin(auth);
+      setMfaChallenge(null);
+      setMfaCode("");
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "MFA verification failed");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function completeLogin(auth: AuthResponse) {
+    const nextSession: StoredSession = {
+      accessToken: auth.accessToken,
+      auth,
+    };
+    window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(nextSession));
+    setSession(nextSession);
+    const currentUser = await fetchCurrentUser(nextSession.accessToken);
+    const serviceAResponse = await fetchServiceAFlow(nextSession.accessToken);
+    setServiceData(currentUser);
+    setServiceAData(serviceAResponse);
   }
 
   const selectedProvider =
@@ -309,7 +383,7 @@ export function App() {
                   <span>Authentication provider</span>
                   <select
                     value={selectedProviderId ?? ""}
-                    onChange={(event) => setSelectedProviderId(Number(event.target.value))}
+                    onChange={(event) => setSelectedProviderId(event.target.value)}
                   >
                     <option value="" disabled>
                       Select a provider
@@ -364,6 +438,36 @@ export function App() {
                   </button>
                   <button className="primary-button" disabled={loading} type="submit">
                     {loading ? "Signing in..." : selectedProvider.providerType === "GOOGLE" ? "Continue with Google" : "Sign in"}
+                  </button>
+                </div>
+              </form>
+            ) : null}
+
+            {loginStage === "mfa" && mfaChallenge ? (
+              <form className="form-stack" onSubmit={handleMfaSubmit}>
+                <div className="provider-summary">
+                  <strong>{mfaChallenge.provider.providerLabel}</strong>
+                  <span>{mfaChallenge.provider.destinationHint}</span>
+                </div>
+                <label className="field">
+                  <span>Second-factor code</span>
+                  <input
+                    autoComplete="one-time-code"
+                    placeholder="Enter MFA code"
+                    type="text"
+                    value={mfaCode}
+                    onChange={(event) => setMfaCode(event.target.value)}
+                  />
+                </label>
+                <div className="credential-hint">
+                  Demo hint: <code>{identifyResult?.credentialHints.otp ?? "Use the seeded OTP for this account"}</code>
+                </div>
+                <div className="action-row">
+                  <button className="secondary-button" type="button" onClick={() => resetLogin()}>
+                    Start over
+                  </button>
+                  <button className="primary-button" disabled={loading} type="submit">
+                    {loading ? "Verifying..." : "Verify MFA"}
                   </button>
                 </div>
               </form>
@@ -504,6 +608,8 @@ export function App() {
     setIdentifyResult(null);
     setSelectedProviderId(null);
     setCredential("");
+    setMfaCode("");
+    setMfaChallenge(null);
     setLoginStage("identify");
     setError("");
   }
@@ -521,4 +627,8 @@ function readStoredSession(): StoredSession | null {
     window.localStorage.removeItem(SESSION_STORAGE_KEY);
     return null;
   }
+}
+
+function isMfaChallenge(response: AuthResponse | MfaChallengeResponse): response is MfaChallengeResponse {
+  return "nextStep" in response && response.nextStep === "mfa";
 }

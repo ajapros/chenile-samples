@@ -18,6 +18,9 @@ public class AuthRealmEntity {
     @Column(name = "realm_key", nullable = false, unique = true)
     private String realmKey;
 
+    @Column(name = "external_id", nullable = false, unique = true)
+    private String externalId;
+
     @Column(name = "display_name", nullable = false)
     private String displayName;
 
@@ -34,6 +37,14 @@ public class AuthRealmEntity {
 
     public void setRealmKey(String realmKey) {
         this.realmKey = realmKey;
+    }
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 
     public String getDisplayName() {

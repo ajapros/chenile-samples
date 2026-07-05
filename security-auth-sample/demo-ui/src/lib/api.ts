@@ -1,4 +1,4 @@
-import type { AuthResponse, DemoUser, IdentifyResponse, ProviderOption, ServiceAResponse, ServiceMeResponse } from "../types";
+import type { AuthResponse, DemoUser, IdentifyResponse, LoginResponse, ProviderOption, ServiceAResponse, ServiceMeResponse } from "../types";
 
 const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
 const apiBaseUrl = configuredBaseUrl ? configuredBaseUrl.replace(/\/$/, "") : "/auth-api";
@@ -31,12 +31,19 @@ export function identifyEmail(email: string): Promise<IdentifyResponse> {
 
 export function authenticateWithProvider(
   email: string,
-  providerId: number,
+  providerId: string,
   credential: string,
-): Promise<AuthResponse> {
+): Promise<LoginResponse> {
   return request(apiBaseUrl, "/api/login/authenticate", {
     method: "POST",
     body: JSON.stringify({ email, providerId, credential }),
+  });
+}
+
+export function verifyMfa(challengeId: string, code: string): Promise<AuthResponse> {
+  return request(apiBaseUrl, "/api/login/mfa/verify", {
+    method: "POST",
+    body: JSON.stringify({ challengeId, code }),
   });
 }
 
@@ -62,7 +69,7 @@ export function fetchDemoUsers(): Promise<DemoUser[]> {
 
 export function startGoogleLogin(
   email: string,
-  providerId: number,
+  providerId: string,
 ): Promise<{ redirectUrl: string; provider: ProviderOption }> {
   return request(apiBaseUrl, "/api/login/google/start", {
     method: "POST",

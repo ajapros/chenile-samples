@@ -52,7 +52,7 @@ public class JpaTenantRegistry implements TenantRegistry {
     public RealmDefinition realm(String tenant) {
         AuthRealmEntity realm = realmRepository.findByRealmKeyIgnoreCaseAndEnabledTrue(tenant)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown realm " + tenant));
-        return new RealmDefinition(realm.getId(), realm.getRealmKey(), realm.getDisplayName());
+        return new RealmDefinition(realm.getExternalId(), realm.getRealmKey(), realm.getDisplayName());
     }
 
     public boolean realmExists(String tenant) {
@@ -64,6 +64,7 @@ public class JpaTenantRegistry implements TenantRegistry {
         try {
             AuthRealmEntity realm = new AuthRealmEntity();
             realm.setRealmKey(tenant);
+            realm.setExternalId("REALM-" + tenant);
             realm.setDisplayName(displayName(tenant));
             realm.setEnabled(true);
             realmRepository.save(realm);
@@ -135,13 +136,13 @@ public class JpaTenantRegistry implements TenantRegistry {
                 .toList();
     }
 
-    public ResolvedUserProvider resolvedProvider(long providerId, String email) {
+    public ResolvedUserProvider resolvedProvider(String providerId, String email) {
         AuthProviderEntity provider = providerRepository.findResolvedProvider(providerId, email)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown provider " + providerId + " for " + email));
         return toResolvedProvider(provider);
     }
 
-    public boolean authenticate(long providerId, String email, String secret) {
+    public boolean authenticate(String providerId, String email, String secret) {
         AuthProviderEntity provider = providerRepository.findResolvedProvider(providerId, email)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown provider " + providerId + " for " + email));
         return secret != null && passwordEncoder.matches(secret, provider.getProviderSecret());
@@ -157,7 +158,7 @@ public class JpaTenantRegistry implements TenantRegistry {
 
     private UserDefinition toUserDefinition(AuthUserEntity user) {
         return new UserDefinition(
-                user.getId(),
+                user.getExternalId(),
                 user.getRealm().getRealmKey(),
                 user.getUsername(),
                 user.getEmail(),
@@ -170,7 +171,7 @@ public class JpaTenantRegistry implements TenantRegistry {
 
     private AuthProviderDefinition toAuthProviderDefinition(AuthProviderEntity provider) {
         return new AuthProviderDefinition(
-                provider.getId(),
+                provider.getExternalId(),
                 provider.getUser().getRealm().getRealmKey(),
                 provider.getUser().getRealm().getDisplayName(),
                 provider.getUser().getUsername(),
@@ -184,10 +185,10 @@ public class JpaTenantRegistry implements TenantRegistry {
     private ResolvedUserProvider toResolvedProvider(AuthProviderEntity provider) {
         AuthUserEntity user = provider.getUser();
         return new ResolvedUserProvider(
-                provider.getId(),
+                provider.getExternalId(),
                 user.getRealm().getRealmKey(),
                 user.getRealm().getDisplayName(),
-                user.getId(),
+                user.getExternalId(),
                 user.getUsername(),
                 user.getEmail(),
                 provider.getProviderKey(),

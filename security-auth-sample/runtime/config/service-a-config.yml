@@ -1,0 +1,22 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: service-a
+
+sample:
+  security:
+    service-b-uri: ${SAMPLE_SECURITY_SERVICE_B_URI:http://localhost:8082}
+
+chenile:
+  security:
+    jwt:
+      issuer-base: ${CHENILE_SECURITY_JWT_ISSUER_BASE:http://localhost:9000}
+      jwk-base-uri: ${CHENILE_SECURITY_JWT_JWK_BASE_URI:http://localhost:9000}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus

@@ -19,7 +19,7 @@
 
     <properties>
         <java.version>25</java.version>
-        <chenile.security.version>2.1.24</chenile.security.version>
+        <chenile.security.version>2.1.26</chenile.security.version>
         <spring-cloud.version>2025.1.2</spring-cloud.version>
     </properties>
 

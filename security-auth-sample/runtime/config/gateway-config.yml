@@ -1,3 +1,10 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: security-auth-sample-gateway
+
 chenile:
   security:
     gateway:
@@ -41,3 +48,9 @@ chenile:
           uri: http://service-b:8082
           rewrite-regex: /api/b/(?<segment>.*)
           rewrite-replacement: /api/b/${segment}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
