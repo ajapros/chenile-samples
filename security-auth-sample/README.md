@@ -63,6 +63,8 @@ External config files used by the sample:
 - `runtime/config/service-a-config.yml`: service A port, issuer/JWK URLs, and service B URL.
 - `runtime/config/service-b-config.yml`: service B port and issuer/JWK URLs.
 
+Access token expiry is configurable with `chenile.security.auth-server.token.access-token-ttl-seconds`; the sample maps this to `CHENILE_SECURITY_ACCESS_TOKEN_TTL_SECONDS` and defaults to `600`.
+
 ## Tenant MFA / Two-Factor Auth
 
 The sample demonstrates sequential tenant-level MFA:

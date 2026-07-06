@@ -60,6 +60,8 @@ java -jar auth-server-app/target/*.jar \
 
 For environment-specific deployments, copy these files into the deployment system as ConfigMaps, mounted files, or externalized Spring config. Keep secrets such as database passwords in environment variables or a secret manager, not in committed YAML.
 
+Access token expiry defaults to 600 seconds and can be changed with `chenile.security.auth-server.token.access-token-ttl-seconds` or the sample environment variable `CHENILE_SECURITY_ACCESS_TOKEN_TTL_SECONDS`.
+
 ## Demo Users
 
 Seeded users and clients live in:

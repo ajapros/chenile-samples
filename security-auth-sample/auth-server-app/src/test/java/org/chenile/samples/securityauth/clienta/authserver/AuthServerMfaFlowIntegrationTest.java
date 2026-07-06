@@ -31,6 +31,7 @@ import org.chenile.security.auth.server.web.LoginFlowController;
         classes = ClientAAuthServerApplication.class,
         properties = {
                 "chenile.security.issuer-base=http://localhost:9000",
+                "chenile.security.auth-server.token.access-token-ttl-seconds=3456",
                 "chenile.security.auth-server.token.audiences.gateway.access=gateway",
                 "chenile.security.auth-server.token.audiences.service-a.read=service-a",
                 "chenile.security.auth-server.token.audiences.service-b.read=service-b"
@@ -112,6 +113,7 @@ class AuthServerMfaFlowIntegrationTest {
                                 """.formatted(challengeId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken").exists())
+                .andExpect(jsonPath("$.expiresIn").value(3456))
                 .andExpect(jsonPath("$.authentication.mfa").value(true))
                 .andReturn();
 
@@ -120,6 +122,7 @@ class AuthServerMfaFlowIntegrationTest {
         assertThat(claims.getStringClaim("user_id")).isEqualTo("USR-tenant-alpha-alice");
         assertThat(claims.getBooleanClaim("mfa")).isTrue();
         assertThat(claims.getStringListClaim("amr")).containsExactly("pwd", "otp");
+        assertThat(tokenLifetimeSeconds(claims)).isEqualTo(3456);
         assertThat(challengeRepository.findResolved(challengeId).orElseThrow().getStatus()).isEqualTo("VERIFIED");
     }
 
@@ -132,6 +135,7 @@ class AuthServerMfaFlowIntegrationTest {
                                 """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken").exists())
+                .andExpect(jsonPath("$.expiresIn").value(3456))
                 .andExpect(jsonPath("$.authentication.mfa").value(false))
                 .andReturn();
 
@@ -139,6 +143,7 @@ class AuthServerMfaFlowIntegrationTest {
         assertThat(claims.getStringClaim("tenant")).isEqualTo("tenant-beta");
         assertThat(claims.getStringClaim("user_id")).isEqualTo("USR-tenant-beta-bob");
         assertThat(claims.getBooleanClaim("mfa")).isFalse();
+        assertThat(tokenLifetimeSeconds(claims)).isEqualTo(3456);
         assertThat(challengeRepository.count()).isZero();
     }
 
@@ -317,6 +322,10 @@ class AuthServerMfaFlowIntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
         return value(primary, "challengeId");
+    }
+
+    private long tokenLifetimeSeconds(JWTClaimsSet claims) {
+        return (claims.getExpirationTime().getTime() - claims.getIssueTime().getTime()) / 1000;
     }
 
     private void resetTenantPolicies() {

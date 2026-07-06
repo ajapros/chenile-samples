@@ -18,6 +18,7 @@ chenile:
       success-uri: ${CHENILE_SECURITY_DEMO_UI_SUCCESS_URI:http://localhost:5173/}
     auth-server:
       token:
+        access-token-ttl-seconds: ${CHENILE_SECURITY_ACCESS_TOKEN_TTL_SECONDS:600}
         audiences:
           gateway.access: gateway
           service-a.read: service-a
