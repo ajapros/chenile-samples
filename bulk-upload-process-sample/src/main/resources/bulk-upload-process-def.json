@@ -1,0 +1,19 @@
+{
+  "processMap": {
+    "bulkUpload": {
+      "splitterConfig": {
+        "description": "Split uploaded CSV into chunk subprocesses"
+      },
+      "aggregatorConfig": {
+        "description": "Aggregate chunk outputs into upload summary"
+      }
+    },
+    "bulkUploadChunk": {
+      "leaf": true,
+      "parentProcessType": "bulkUpload",
+      "executorConfig": {
+        "description": "Validate and store row-level results for one CSV chunk"
+      }
+    }
+  }
+}

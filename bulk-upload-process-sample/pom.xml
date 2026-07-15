@@ -1,0 +1,73 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.chenile</groupId>
+		<artifactId>chenile-parent</artifactId>
+		<version>2.1.26</version>
+	</parent>
+
+	<groupId>org.chenile.samples</groupId>
+	<artifactId>bulk-upload-process-sample</artifactId>
+	<version>${revision}</version>
+	<name>Chenile Bulk Upload Process Sample</name>
+	<description>Production-style bulk upload sample using process-manager, Postgres, object storage, workers and KEDA.</description>
+
+	<properties>
+		<revision>0.0.1-SNAPSHOT</revision>
+		<minio.version>8.5.17</minio.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.chenile</groupId>
+			<artifactId>chenile-http</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.chenile.orchestrator.process</groupId>
+			<artifactId>process-service</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.chenile.orchestrator.process</groupId>
+			<artifactId>process-utils</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.chenile.orchestrator.process</groupId>
+			<artifactId>jdbc-process-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.minio</groupId>
+			<artifactId>minio</artifactId>
+			<version>${minio.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+</project>

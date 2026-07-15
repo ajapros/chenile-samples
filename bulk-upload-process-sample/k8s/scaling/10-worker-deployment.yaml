@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bulk-upload-worker
+  namespace: chenile-bulk-upload
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: bulk-upload-worker
+  template:
+    metadata:
+      labels:
+        app: bulk-upload-worker
+    spec:
+      serviceAccountName: bulk-upload-worker
+      containers:
+        - name: worker
+          image: example.com/chenile/bulk-upload-process-sample:latest
+          envFrom:
+            - configMapRef:
+                name: bulk-upload-config
+            - secretRef:
+                name: bulk-upload-secret
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: postgres,worker
+            - name: chenile.process.worker.jdbc.worker-id
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi

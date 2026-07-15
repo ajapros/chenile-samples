@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bulk-upload-api
+  namespace: chenile-bulk-upload
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bulk-upload-api
+  template:
+    metadata:
+      labels:
+        app: bulk-upload-api
+    spec:
+      serviceAccountName: bulk-upload-api
+      containers:
+        - name: api
+          image: example.com/chenile/bulk-upload-process-sample:latest
+          ports:
+            - containerPort: 8095
+          envFrom:
+            - configMapRef:
+                name: bulk-upload-config
+            - secretRef:
+                name: bulk-upload-secret
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: postgres
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8095
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8095
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bulk-upload-api
+  namespace: chenile-bulk-upload
+spec:
+  selector:
+    app: bulk-upload-api
+  ports:
+    - port: 8095
+      targetPort: 8095

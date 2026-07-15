@@ -1,0 +1,63 @@
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: bulk_upload
+      POSTGRES_USER: chenile
+      POSTGRES_PASSWORD: chenile
+    ports:
+      - "55432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chenile -d bulk_upload"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  minio:
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
+  api:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: postgres
+      POSTGRES_JDBC_URL: jdbc:postgresql://postgres:5432/bulk_upload
+      POSTGRES_USER: chenile
+      POSTGRES_PASSWORD: chenile
+      OBJECT_STORE_TYPE: minio
+      OBJECT_STORE_ENDPOINT: http://minio:9000
+      OBJECT_STORE_ACCESS_KEY: minioadmin
+      OBJECT_STORE_SECRET_KEY: minioadmin
+      OBJECT_STORE_BUCKET: chenile-bulk-upload
+    ports:
+      - "8095:8095"
+
+  worker:
+    build: .
+    depends_on:
+      api:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: postgres,worker
+      POSTGRES_JDBC_URL: jdbc:postgresql://postgres:5432/bulk_upload
+      POSTGRES_USER: chenile
+      POSTGRES_PASSWORD: chenile
+      OBJECT_STORE_TYPE: minio
+      OBJECT_STORE_ENDPOINT: http://minio:9000
+      OBJECT_STORE_ACCESS_KEY: minioadmin
+      OBJECT_STORE_SECRET_KEY: minioadmin
+      OBJECT_STORE_BUCKET: chenile-bulk-upload
+      chenile.process.worker.jdbc.worker-id: compose-worker
+    deploy:
+      replicas: 1

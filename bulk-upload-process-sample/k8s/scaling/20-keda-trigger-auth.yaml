@@ -1,0 +1,13 @@
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: bulk-upload-postgres-auth
+  namespace: chenile-bulk-upload
+spec:
+  secretTargetRef:
+    - parameter: username
+      name: bulk-upload-secret
+      key: POSTGRES_USER
+    - parameter: password
+      name: bulk-upload-secret
+      key: POSTGRES_PASSWORD

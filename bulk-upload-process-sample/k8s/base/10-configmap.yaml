@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bulk-upload-config
+  namespace: chenile-bulk-upload
+data:
+  POSTGRES_JDBC_URL: jdbc:postgresql://postgres:5432/bulk_upload
+  OBJECT_STORE_TYPE: minio
+  OBJECT_STORE_ENDPOINT: http://minio:9000
+  OBJECT_STORE_BUCKET: chenile-bulk-upload
