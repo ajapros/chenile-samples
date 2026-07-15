@@ -2,6 +2,45 @@
 
 This setup is intentionally DB/KEDA based. RabbitMQ is not used for scaling.
 
+## Local Docker Desktop Validation
+
+Use the Docker Desktop scripts from the sample root when validating on local Docker Desktop Kubernetes:
+
+```bash
+./scripts/docker-desktop-local/preflight.sh
+./scripts/docker-desktop-local/build-image.sh
+./scripts/docker-desktop-local/install-keda.sh
+./scripts/docker-desktop-local/run-e2e.sh
+```
+
+The Docker Desktop overlay is in `k8s/docker-desktop`. It reuses the production-style base/scaling manifests and changes the image to `chenile/bulk-upload-process-sample:local`.
+
+Artifacts are written to `target/docker-desktop-bulk-upload-audit/`.
+
+## Local kubeadm Validation
+
+Use the kubeadm scripts from the sample root when validating on a local kubeadm cluster:
+
+```bash
+./scripts/kubeadm-local/preflight.sh
+./scripts/kubeadm-local/build-image.sh
+./scripts/kubeadm-local/install-keda.sh
+./scripts/kubeadm-local/run-e2e.sh
+```
+
+The kubeadm overlay is in `k8s/kubeadm-local`. It reuses the production-style base/scaling manifests and changes the image to `chenile/bulk-upload-process-sample:local`.
+
+The end-to-end run captures:
+
+- upload report API output
+- audit API output
+- Postgres upload/group/chunk/work-item summaries
+- KEDA ScaledObject status
+- Kubernetes events
+- API and worker pod logs
+
+Artifacts are written to `target/kubeadm-bulk-upload-audit/`.
+
 ## Apply Base Stack
 
 ```bash

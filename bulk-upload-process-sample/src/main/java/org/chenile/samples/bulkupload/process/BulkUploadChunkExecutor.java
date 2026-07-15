@@ -23,6 +23,8 @@ public class BulkUploadChunkExecutor extends ExecutorBase<BulkUploadChunkInput, 
 
 	@Override
 	protected BulkUploadChunkResult doStart(WorkerDto workerDto, BulkUploadChunkInput input) {
+		repository.audit(input.uploadId(), workerDto.process.getId(), "CHUNK_STARTED", "EXECUTOR",
+				"RUNNING", "Executing chunk " + input.chunkNumber(), null);
 		repository.startChunk(input.uploadId(), input.chunkNumber());
 		int total = 0;
 		int success = 0;
@@ -46,6 +48,9 @@ public class BulkUploadChunkExecutor extends ExecutorBase<BulkUploadChunkInput, 
 				repository.rowResult(input.uploadId(), input.chunkNumber(), lineNumber, line, rowSuccess, error);
 			}
 			repository.finishChunk(input.uploadId(), input.chunkNumber(), total, success, errors);
+			repository.audit(input.uploadId(), workerDto.process.getId(), "CHUNK_FINISHED", "EXECUTOR",
+					errors == 0 ? "SUCCESS" : "SUCCESS_WITH_ERRORS",
+					"Finished chunk " + input.chunkNumber(), null);
 			return new BulkUploadChunkResult(input.uploadId(), input.chunkNumber(), total, success, errors);
 		} catch (Exception e) {
 			throw new IllegalStateException("Unable to execute chunk " + input.chunkNumber(), e);

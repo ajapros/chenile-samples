@@ -5,7 +5,7 @@ import org.chenile.orchestrator.process.model.Process;
 import org.chenile.orchestrator.process.model.WorkerDto;
 import org.chenile.orchestrator.process.utils.base.AggregatorBase;
 import org.chenile.samples.bulkupload.model.BulkUploadModels.BulkUploadAggregateResult;
-import org.chenile.samples.bulkupload.model.BulkUploadModels.BulkUploadChunkResult;
+import org.chenile.samples.bulkupload.model.BulkUploadModels.BulkUploadGroupResult;
 import org.chenile.samples.bulkupload.model.BulkUploadModels.BulkUploadProcessInput;
 import org.chenile.samples.bulkupload.store.BulkUploadRepository;
 import org.chenile.samples.bulkupload.store.ObjectStore;
@@ -14,7 +14,8 @@ import org.springframework.stereotype.Component;
 import java.io.ByteArrayInputStream;
 
 @Component("bulkUploadAggregator")
-public class BulkUploadAggregator extends AggregatorBase<BulkUploadProcessInput, BulkUploadAggregateResult, BulkUploadChunkResult> {
+public class BulkUploadAggregator
+		extends AggregatorBase<BulkUploadProcessInput, BulkUploadAggregateResult, BulkUploadGroupResult> {
 	private final BulkUploadRepository repository;
 	private final ObjectStore objectStore;
 	private final ObjectMapper objectMapper;
@@ -27,7 +28,7 @@ public class BulkUploadAggregator extends AggregatorBase<BulkUploadProcessInput,
 
 	@Override
 	protected BulkUploadAggregateResult doStart(BulkUploadAggregateResult out, BulkUploadProcessInput input,
-			BulkUploadChunkResult childOutput, WorkerDto workerDto, Process process) {
+			BulkUploadGroupResult childOutput, WorkerDto workerDto, Process process) {
 		int total = out == null ? 0 : out.totalRows();
 		int success = out == null ? 0 : out.successRows();
 		int errors = out == null ? 0 : out.errorRows();
@@ -43,6 +44,8 @@ public class BulkUploadAggregator extends AggregatorBase<BulkUploadProcessInput,
 			byte[] bytes = objectMapper.writeValueAsBytes(aggregate);
 			objectStore.put(resultObjectKey, new ByteArrayInputStream(bytes), bytes.length, "application/json");
 			repository.finishUpload(input.uploadId(), total, success, errors, resultObjectKey);
+			repository.audit(input.uploadId(), workerDto.process.getId(), "UPLOAD_AGGREGATED", "AGGREGATOR",
+					status, "Final upload report created", "{\"resultObjectKey\":\"" + resultObjectKey + "\"}");
 			return aggregate;
 		} catch (Exception e) {
 			throw new IllegalStateException("Unable to aggregate upload " + input.uploadId(), e);

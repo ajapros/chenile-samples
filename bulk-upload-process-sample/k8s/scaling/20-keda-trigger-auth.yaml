@@ -5,7 +5,7 @@ metadata:
   namespace: chenile-bulk-upload
 spec:
   secretTargetRef:
-    - parameter: username
+    - parameter: userName
       name: bulk-upload-secret
       key: POSTGRES_USER
     - parameter: password

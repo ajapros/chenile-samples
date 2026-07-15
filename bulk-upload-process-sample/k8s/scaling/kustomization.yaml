@@ -1,0 +1,6 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - 10-worker-deployment.yaml
+  - 20-keda-trigger-auth.yaml
+  - 30-keda-scaledobject.yaml

@@ -1,0 +1,24 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../base
+  - ../scaling
+images:
+  - name: example.com/chenile/bulk-upload-process-sample
+    newName: chenile/bulk-upload-process-sample
+    newTag: local
+patches:
+  - target:
+      kind: Deployment
+      name: bulk-upload-api
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: IfNotPresent
+  - target:
+      kind: Deployment
+      name: bulk-upload-worker
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: IfNotPresent
