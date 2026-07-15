@@ -91,6 +91,35 @@ target/docker-desktop-bulk-upload-audit/
 
 Docker Desktop Kubernetes must be enabled and the current `kubectl` context must be `docker-desktop`.
 
+Inspect what is running:
+
+```bash
+kubectl -n chenile-bulk-upload get deploy,pods,svc,scaledobject,hpa
+kubectl -n chenile-bulk-upload logs deploy/bulk-upload-api --tail=200
+kubectl -n chenile-bulk-upload logs deploy/bulk-upload-worker --tail=300
+```
+
+Read the captured result:
+
+```bash
+cat target/docker-desktop-bulk-upload-audit/report.json
+cat target/docker-desktop-bulk-upload-audit/audit.json
+cat target/docker-desktop-bulk-upload-audit/keda-summary.txt
+cat target/docker-desktop-bulk-upload-audit/db-workers.txt
+```
+
+Shut down the sample stack:
+
+```bash
+./scripts/docker-desktop-local/shutdown.sh
+```
+
+The shutdown script deletes only the `chenile-bulk-upload` namespace. KEDA is left installed because it is shared local cluster infrastructure. To remove KEDA too:
+
+```bash
+REMOVE_KEDA=true ./scripts/docker-desktop-local/shutdown.sh
+```
+
 ## Local kubeadm Kubernetes
 
 The kubeadm path is also available when `kubeadm` is installed and the current `kubectl` context points to the local kubeadm cluster:
@@ -103,6 +132,41 @@ The kubeadm path is also available when `kubeadm` is installed and the current `
 ```
 
 If the node runtime is containerd, `build-image.sh` imports `chenile/bulk-upload-process-sample:local` into `k8s.io` using `ctr`.
+
+Shut down the kubeadm sample stack:
+
+```bash
+./scripts/kubeadm-local/shutdown.sh
+```
+
+Set `REMOVE_KEDA=true` only when the local cluster does not need KEDA for any other sample.
+
+## Audit and Data Guide
+
+Use the API report for product-level status and the audit output for operational traceability.
+
+The important runtime data is:
+
+- `bulk_upload_file`: one row per uploaded file and the final status/counts.
+- `bulk_upload_group`: deterministic nested groups created by the root splitter.
+- `bulk_upload_chunk`: executable chunk work created by group splitters.
+- `bulk_upload_row_result`: idempotent row-level success/error records.
+- `bulk_upload_audit_event`: business audit events emitted by splitters, executors, and aggregators.
+- `chenile_process_work_item`: framework-owned durable worker queue.
+
+Expected audit lifecycle:
+
+- `UPLOAD_SUBMITTED`
+- `ROOT_SPLIT_STARTED`
+- `ROOT_SPLIT_FINISHED`
+- `GROUP_SPLIT_STARTED`
+- `GROUP_SPLIT_FINISHED`
+- `CHUNK_STARTED`
+- `CHUNK_FINISHED`
+- `GROUP_AGGREGATED`
+- `UPLOAD_AGGREGATED`
+
+The sample intentionally completes with `SUCCESS_WITH_ERRORS` for the default E2E CSV because two rows are invalid. That validates the partial-success path, row-level error capture, and final aggregation.
 
 ## Kubernetes
 
