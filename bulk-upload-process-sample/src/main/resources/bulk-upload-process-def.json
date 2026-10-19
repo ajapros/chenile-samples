@@ -1,26 +1,22 @@
 {
   "processMap": {
     "bulkUpload": {
-      "splitterConfig": {
-        "description": "Split uploaded CSV into group subprocesses"
-      },
-      "aggregatorConfig": {
-        "description": "Aggregate group outputs into upload summary"
+      "config": {
+        "splitterDescription": "Split uploaded CSV into group subprocesses",
+        "aggregatorDescription": "Aggregate group outputs into upload summary"
       }
     },
     "bulkUploadGroup": {
       "parentProcessType": "bulkUpload",
-      "splitterConfig": {
-        "description": "Split one upload group into chunk subprocesses"
-      },
-      "aggregatorConfig": {
-        "description": "Aggregate chunk outputs into group summary"
+      "config": {
+        "splitterDescription": "Split one upload group into chunk subprocesses",
+        "aggregatorDescription": "Aggregate chunk outputs into group summary"
       }
     },
     "bulkUploadChunk": {
       "leaf": true,
       "parentProcessType": "bulkUploadGroup",
-      "executorConfig": {
+      "config": {
         "description": "Validate and store row-level results for one CSV chunk"
       }
     }

@@ -1,10 +1,8 @@
 {
   "processMap": {
     "feed": {
-      "splitterConfig": {
-        "splitter_key": "splitter_value"
-      },
-      "aggregatorConfig": {
+      "config": {
+        "splitter_key": "splitter_value",
         "aggregator_key": "aggregator_value"
       }
     },
@@ -14,7 +12,7 @@
     "chunk": {
       "leaf": true,
       "parentProcessType": "file",
-      "executorConfig": {
+      "config": {
         "executor_key": "executor_value"
       }
     }
