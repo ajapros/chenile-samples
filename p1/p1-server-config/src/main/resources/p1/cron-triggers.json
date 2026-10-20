@@ -1,0 +1,17 @@
+[ {
+  "id" : "c12fe3ee-8287-3454-832d-38be00ea92d9",
+  "createdTime" : null,
+  "lastModifiedTime" : null,
+  "lastModifiedBy" : null,
+  "tenant" : "default",
+  "createdBy" : null,
+  "testEntity" : false,
+  "version" : 0,
+  "name" : "daily-batch",
+  "enabled" : false,
+  "cronExpression" : "0 0 2 * * ?",
+  "timezone" : "UTC",
+  "eventName" : "ProcessCreate",
+  "headersJson" : null,
+  "eventPayloadJson" : "{\"processDefName\":\"batch\",\"args\":{\"batchId\":\"example\"}}"
+} ]

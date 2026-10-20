@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<parent>
+		<artifactId>p1Server-parent</artifactId>
+		<groupId>com.mycompany.myorg.p1Server</groupId>
+		<version>${revision}</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>p1Server-configurations</artifactId>
+	<name>P1Server Configurations</name>
+	<description>P1Server Configurations - contains only configurations for all environments</description>
+
+	<dependencies>
+		
+	</dependencies>
+</project>

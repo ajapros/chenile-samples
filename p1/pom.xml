@@ -1,0 +1,10 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>
+
+<parent><groupId>org.chenile</groupId><artifactId>chenile-parent</artifactId><version>2.1.33</version></parent>
+<groupId>com.mycompany.myorg.p1</groupId><artifactId>p1-parent</artifactId><version>0.0.1-SNAPSHOT</version><packaging>pom</packaging>
+<properties><revision>0.0.1-SNAPSHOT</revision></properties>
+<modules><module>p1-api</module><module>p1-server-config</module><module>p1-server-service</module>
+<module>p1-batch-workers</module><module>p1-item-workers</module>
+<module>p1-worker-listener</module><module>p1Server</module><module>p1Worker</module>
+
+</modules></project>

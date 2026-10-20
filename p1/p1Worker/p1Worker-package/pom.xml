@@ -1,0 +1,188 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<artifactId>p1Worker-parent</artifactId>
+		<groupId>com.mycompany.myorg.p1Worker</groupId>
+		<version>${revision}</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<artifactId>p1Worker-package</artifactId>
+	<packaging>jar</packaging>
+
+	<name>P1Worker Package - Deploys the P1Worker related set of service</name>
+
+	<dependencies>
+
+		<!-- Chenile Dependencies Starts -->
+			<dependency>
+				<groupId>org.chenile</groupId>
+				<artifactId>chenile-http</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>org.chenile</groupId>
+				<artifactId>service-registry-delegate</artifactId>
+			</dependency>
+			<!-- Chenile Dependencies Ends -->
+
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.chenile</groupId>
+			<artifactId>utils</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.mycompany.myorg.p1Worker</groupId>
+			<artifactId>p1Worker-configurations</artifactId>
+			<version>${revision}</version>
+		</dependency>
+		<dependency>
+				<groupId>org.springdoc</groupId>
+				<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+		</dependency>
+
+
+		<!-- Start including all the services that need to be packaged with this mini monolith -->
+
+        <dependency>
+            <groupId>com.mycompany.myorg.p1</groupId>
+            <artifactId>p1-worker-listener</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mycompany.myorg.p1</groupId>
+            <artifactId>p1-batch-service</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mycompany.myorg.p1</groupId>
+            <artifactId>p1-item-service</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+	</dependencies>
+
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                </plugin>
+            </plugins>
+        </build>
+    <profiles>
+    <profile>
+        <id>it</id>
+        <activation>
+            <property>
+                <name>performIt</name>
+                <value>true</value>
+            </property>
+        </activation>
+        <properties>
+            <spring.profiles.active>it</spring.profiles.active>
+            <activatedProperties>it</activatedProperties>
+            <performIt>true</performIt>
+        </properties>
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>reserve-ports</id>
+                            <goals>
+                                <goal>reserve-network-port</goal>
+                            </goals>
+                            <phase>process-resources</phase>
+                            <configuration>
+                                <portNames>
+                                    <portName>boot.jmx.port</portName>
+                                    <portName>it.port</portName>
+                                </portNames>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <configuration>
+                        <jvmArguments>-Dspring.application.admin.enabled=true</jvmArguments>
+                        <jmxPort>${boot.jmx.port}</jmxPort>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>pre-integration-test</id>
+                            <goals>
+                                <goal>start</goal>
+                            </goals>
+                            <configuration>
+                                <profiles>
+                                    <profile>it</profile>
+                                </profiles>
+                                <arguments>
+                                    <argument>--server.port=${it.port}</argument>
+                                </arguments>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>post-integration-test</id>
+                            <goals>
+                                <goal>stop</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.springdoc</groupId>
+                    <artifactId>springdoc-openapi-maven-plugin</artifactId>
+                    <version>1.1</version>
+                    <executions>
+                        <execution>
+                            <id>integration-test</id>
+                            <goals>
+                                <goal>generate</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <apiDocsUrl>http://localhost:${it.port}/v3/api-docs</apiDocsUrl>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.chenile</groupId>
+                    <artifactId>chenile-config-maven-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>integration-test</id>
+                            <goals>
+                                <goal>generate</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <serviceInfoUrlPrefix>http://localhost:${it.port}/service-info/</serviceInfoUrlPrefix>
+                        <infoUrl>http://localhost:${it.port}/info</infoUrl>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </build>
+    </profile>
+    </profiles>
+
+</project>

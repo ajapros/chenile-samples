@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<packaging>pom</packaging>
+	<modules>
+		<module>p1Worker-configurations</module>	
+		<module>p1Worker-package</module>
+	</modules>
+
+	<parent>
+		<groupId>com.mycompany.myorg.p1</groupId>
+		<artifactId>p1-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<properties>
+		<p1Worker.version>${revision}</p1Worker.version>
+		<revision>0.0.1-SNAPSHOT</revision>
+	</properties>
+	
+	<groupId>com.mycompany.myorg.p1Worker</groupId>
+	<artifactId>p1Worker-parent</artifactId>
+	<version>${revision}</version>
+	<name>All Modules that belong to the P1Worker deployment</name>
+	<description>Modules execution and deployment project</description>
+
+</project>

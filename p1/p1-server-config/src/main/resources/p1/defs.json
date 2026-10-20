@@ -1,0 +1,37 @@
+{
+  "processMap" : {
+    "batch" : {
+      "parentProcessType" : null,
+      "predecessorProcessType" : null,
+      "predecessorArgs" : "BOTH",
+      "processType" : "batch",
+      "args" : "com.mycompany.myorg.p1.model.BatchIn",
+      "leaf" : false,
+      "config" : {
+        "queue" : "p1-work"
+      },
+      "inputFields" : {
+        "batchId" : "string"
+      },
+      "outputFields" : null
+    },
+    "item" : {
+      "parentProcessType" : "batch",
+      "predecessorProcessType" : null,
+      "predecessorArgs" : "BOTH",
+      "processType" : "item",
+      "args" : "com.mycompany.myorg.p1.model.ItemIn",
+      "leaf" : true,
+      "config" : {
+        "queue" : "p1-work"
+      },
+      "inputFields" : {
+        "itemId" : "string"
+      },
+      "outputFields" : {
+        "processed" : "boolean",
+        "itemNumber" : "long"
+      }
+    }
+  }
+}

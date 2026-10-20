@@ -1,0 +1,32 @@
+
+chenile:
+  security:
+    client:
+      id: "authz-servlet"
+      secret: "secret"
+    keycloak:
+      host: "http://localhost:8180"
+      port: 8180
+      base:
+        realm: quickstart
+
+spring:
+  application:
+    name: p1Server
+  h2:
+    console:
+      enabled: ${PROCESS_H2_CONSOLE_ENABLED:true}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8180/realms/#tenantId#/protocol/openid-connect/certs
+
+server:
+  banner:
+    location: classpath:banner.txt
+logging:
+  level:
+    org:
+      chenile:
+        security: DEBUG
