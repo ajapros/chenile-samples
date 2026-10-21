@@ -79,8 +79,11 @@ administrator routes; configure your application's HTTP authentication for
 public process, trigger, crontab and registry routes before exposing them.
 
 Kafka publications wait for broker acknowledgement before the outbox command can
-complete. Worker delivery failures remain retryable; external business effects
-must still tolerate redelivery. The generated tests verify the REST contract,
+complete. The server uses Chenile's `chenile-kafka` publisher; configure
+`PUBSUB_PUBLISH_WAIT_TIME_MS` to change the acknowledgement timeout (default
+`30000` ms). A value of `0` disables waiting, following the publisher's
+`pubsub.publish.waitTime` contract. Worker delivery failures remain retryable;
+external business effects must still tolerate redelivery. The generated tests verify the REST contract,
 committed-process publication to Kafka, broker delivery to the headless worker,
 tenant restoration and failed-publication propagation. Run `mvn install` with
 Docker available: the server and worker tests extend `KafkaBaseTest`, which

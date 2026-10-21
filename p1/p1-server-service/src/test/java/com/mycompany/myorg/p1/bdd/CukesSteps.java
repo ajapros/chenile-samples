@@ -23,7 +23,9 @@ import static org.junit.jupiter.api.Assertions.*;
             "spring.sql.init.schema-locations=classpath:chenile-process-outbox-schema.sql",
             "chenile.process.outbox.run-dispatcher=true",
             "chenile.process.management.enabled=false",
-            "chenile.process.configurator=json"
+            "chenile.process.configurator=json",
+            "pubsub.topic.separator=_",
+            "pubsub.publish.waitTime=30000"
         })
 @org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 public class CukesSteps {

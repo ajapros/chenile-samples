@@ -2,10 +2,13 @@ package com.mycompany.myorg.p1.configuration;
 
 import com.mycompany.myorg.p1.service.*;
 import org.chenile.orchestrator.process.api.ProcessManager;
+import org.chenile.pubsub.configuration.PubSubConfiguration;
+import org.chenile.pubsub.kafka.configuration.KafkaConfiguration;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.*;
 
 @Configuration
+@Import({PubSubConfiguration.class, KafkaConfiguration.class})
 public class P1ProcessConfiguration {
     @Bean
     @org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean(
