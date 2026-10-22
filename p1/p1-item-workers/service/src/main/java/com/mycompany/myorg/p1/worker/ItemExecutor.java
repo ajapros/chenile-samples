@@ -10,6 +10,9 @@ public class ItemExecutor extends ExecutorBase<ItemIn, ItemOutput> {
     protected ItemOutput doStart(WorkerDto worker, ItemIn input) {
         // Transform the typed input into the typed output.
         // throw new UnsupportedOperationException("Implement ItemExecutor.doStart");
-        return new ItemOutput();
+        ItemOutput x =  new ItemOutput();
+        x.itemNumber = Long.getLong(String.valueOf(input.index));
+        x.processed = true;
+        return x;
     }
 }

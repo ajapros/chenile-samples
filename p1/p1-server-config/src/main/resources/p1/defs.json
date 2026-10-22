@@ -8,7 +8,7 @@
       "args" : "com.mycompany.myorg.p1.model.BatchIn",
       "leaf" : false,
       "config" : {
-        "queue" : "p1-work"
+        "queue" : "process-work"
       },
       "inputFields" : {
         "batchId" : "string"
@@ -23,7 +23,7 @@
       "args" : "com.mycompany.myorg.p1.model.ItemIn",
       "leaf" : true,
       "config" : {
-        "queue" : "p1-work"
+        "queue" : "process-work"
       },
       "inputFields" : {
         "itemId" : "string"

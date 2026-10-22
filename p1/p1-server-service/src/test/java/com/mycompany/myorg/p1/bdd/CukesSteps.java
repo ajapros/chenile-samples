@@ -21,11 +21,11 @@ import static org.junit.jupiter.api.Assertions.*;
             "spring.liquibase.enabled=false",
             "spring.sql.init.mode=always",
             "spring.sql.init.schema-locations=classpath:chenile-process-outbox-schema.sql",
+            "pubsub.topic.separator=_",
+            "pubsub.publish.waitTime=30000",
             "chenile.process.outbox.run-dispatcher=true",
             "chenile.process.management.enabled=false",
-            "chenile.process.configurator=json",
-            "pubsub.topic.separator=_",
-            "pubsub.publish.waitTime=30000"
+            "chenile.process.configurator=json"
         })
 @org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 public class CukesSteps {
@@ -45,7 +45,7 @@ public class CukesSteps {
         properties.put("auto.offset.reset", "earliest");
         properties.put("enable.auto.commit", false);
         consumer = new KafkaConsumer<>(properties, new StringDeserializer(), new StringDeserializer());
-        consumer.subscribe(List.of("p1-work"));
+        consumer.subscribe(List.of("process-work"));
     }
 
     @io.cucumber.java.en.Then("the committed process is published to Kafka")

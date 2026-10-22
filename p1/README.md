@@ -1,20 +1,5 @@
 # p1 process deployment
 
-This is the output of the Process Management blueprint with a trivial tweaking. 
-## How to create it
-
-```sh
-jgen.sh -e oo -g chenile-process-management
-# This generates a file called input-file.json under a folder called "oo"
-cd oo
-jgen.sh -f input-file.json
-# This generates the process called p1 under a folder called output/p1
-# You can make minor tweaks to take care of it. 
-# Read below to see how you can start process-ui on it.
-```
-
-## Description 
-
 This reactor contains one process server and one worker mini-monolith.
 
 The registry endpoint is http://localhost:8000.
@@ -38,7 +23,7 @@ java -jar p1Server/p1Server-package/target/p1Server-package-0.0.1-SNAPSHOT.jar
 java -jar p1Worker/p1Worker-package/target/p1Worker-package-0.0.1-SNAPSHOT.jar
 ```
 
-Start Kafka first. Create topics `p1-work`; the worker consumes all of them
+Start Kafka first. Create topics `process-work` and their `.DLT` dead-letter topics; the worker consumes all of them
 using consumer group `p1-workers` (override with
 `PROCESS_WORK_CONSUMER_GROUP`). Worker replicas share that group. Preserve
 `x-chenile-tenant-id` in messages and callbacks.
@@ -46,8 +31,9 @@ using consumer group `p1-workers` (override with
 The worker uses `process-delegate` and the service registry to discover
 `processService`; the server deployment URL is advertised to that registry.
 Its headless work operation has no HTTP route. The worker deployment URL describes
-the host, not the message transport. No process datasource or outbox dispatcher
-runs on the worker.
+the host, not the message transport. `process-delegate` provides the shared worker-dispatch
+service; the blueprint generates only the headless event controller. No process datasource
+or outbox dispatcher runs on the worker.
 
 Each process definition has a worker JAR:
 - `p1-batch-workers`: parent for `p1-batch-api` and `p1-batch-service`; its API owns `BatchIn` and `AggregatedResult&lt;ItemOutput&gt;`, while its service contains the splitter and typed aggregator.
@@ -61,6 +47,11 @@ The server owns `p1-server-config`, including definitions and optional
 cron schedules. Bootstrap inserts missing records only; restarts preserve saved
 administrator changes. Generated cron schedules remain disabled unless enabled
 in the input specification.
+
+Start a process through the process service's generic `POST /process` endpoint.
+Provide `processDefName` and an `args` object containing that process definition's
+input fields. The server does not generate a separate start service for each
+process type.
 
 ## Persistence and configuration
 
@@ -79,11 +70,10 @@ administrator routes; configure your application's HTTP authentication for
 public process, trigger, crontab and registry routes before exposing them.
 
 Kafka publications wait for broker acknowledgement before the outbox command can
-complete. The server uses Chenile's `chenile-kafka` publisher; configure
-`PUBSUB_PUBLISH_WAIT_TIME_MS` to change the acknowledgement timeout (default
-`30000` ms). A value of `0` disables waiting, following the publisher's
-`pubsub.publish.waitTime` contract. Worker delivery failures remain retryable;
-external business effects must still tolerate redelivery. The generated tests verify the REST contract,
+complete. The generated server sets `pubsub.publish.waitTime` to
+`${PUBSUB_PUBLISH_WAIT_TIME_MS:30000}` milliseconds; set it to `0` to disable waiting.
+Worker delivery failures remain retryable; external business effects
+must still tolerate redelivery. The generated tests verify the REST contract,
 committed-process publication to Kafka, broker delivery to the headless worker,
 tenant restoration and failed-publication propagation. Run `mvn install` with
 Docker available: the server and worker tests extend `KafkaBaseTest`, which

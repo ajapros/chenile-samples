@@ -1,15 +1,15 @@
-package com.mycompany.myorg.p1.configuration;
+package com.mycompany.myorg.p1.configuration.controller;
 
 import org.chenile.core.annotation.*;
 import org.chenile.http.annotation.*;
 import org.chenile.orchestrator.process.model.WorkerDto;
 import org.chenile.orchestrator.process.utils.api.BatchService;
 
-/** Headless Chenile metadata; execution is bound to the ProcessWorkers service bean. */
+/** Headless Chenile metadata; execution is handled by process-delegate. */
 @ChenileController(value="processWork", serviceName="_processWorkService_", interfaceClass=BatchService.class,
         bluePrintName="chenile-headless-service", registerInServiceRegistry=false)
 public class ProcessWorkListener {
-    @EventsSubscribedTo("process-work")
+    @EventsSubscribedTo({"process-work"})
     @ChenileOperation
     public boolean startWorker(@ChenileBody WorkerDto dto) {
         return true;

@@ -17,5 +17,6 @@ public class BatchSplitter extends SplitterBase<BatchIn, Object> {
             payloads.add(makeSubProcessPayload(new ItemIn(i),"item"));
         }
         return payloads;
+        // throw new UnsupportedOperationException("Implement BatchSplitter.doStart");
     }
 }
