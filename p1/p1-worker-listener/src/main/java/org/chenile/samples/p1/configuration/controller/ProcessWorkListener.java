@@ -1,0 +1,29 @@
+package org.chenile.samples.p1.configuration.controller;
+
+import org.chenile.core.annotation.ChenileBody;
+import org.chenile.core.annotation.ChenileOperation;
+import org.chenile.http.annotation.BodyTypeSelector;
+import org.chenile.http.annotation.ChenileController;
+import org.chenile.http.annotation.EventsSubscribedTo;
+import org.chenile.orchestrator.process.workers.WorkListenerInput;
+import org.chenile.orchestrator.process.workers.WorkListenerService;
+
+/** Headless Chenile endpoint for queue-delivered process work. */
+@ChenileController(
+    value = "processWork",
+    serviceName = "_processWorkService_",
+    serviceSelector = "processWorkServiceSelector",
+    interfaceClass = WorkListenerService.class,
+    bluePrintName = "chenile-headless-service",
+    registerInServiceRegistry = false)
+public class ProcessWorkListener {
+    @EventsSubscribedTo({"process-work"})
+    @ChenileOperation
+    @BodyTypeSelector("processWorkBodyTypeSelector")
+    public boolean accept(
+            String processType,
+            String workerType,
+            @ChenileBody WorkListenerInput<Object> input) {
+        return true;
+    }
+}

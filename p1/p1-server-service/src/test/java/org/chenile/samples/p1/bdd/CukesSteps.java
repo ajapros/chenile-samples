@@ -1,0 +1,88 @@
+package org.chenile.samples.p1.bdd;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.chenile.orchestrator.process.configuration.dao.ProcessRepository;
+import org.chenile.orchestrator.process.workers.WorkListenerInput;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import java.time.Duration;
+import java.util.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+@io.cucumber.spring.CucumberContextConfiguration
+@org.springframework.boot.test.context.SpringBootTest(
+        classes = ProcessTestHost.class,
+        properties = {
+            "spring.datasource.url=jdbc:h2:mem:generated-process;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
+            "spring.jpa.hibernate.ddl-auto=create-drop",
+            "spring.liquibase.enabled=false",
+            "spring.sql.init.mode=always",
+            "spring.sql.init.schema-locations=classpath:chenile-process-outbox-schema.sql",
+            "pubsub.topic.separator=_",
+            "pubsub.publish.waitTime=30000",
+            "chenile.process.outbox.run-dispatcher=true",
+            "chenile.process.management.enabled=false",
+            "chenile.process.configurator=json"
+        })
+@org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
+public class CukesSteps {
+    @Autowired ProcessRepository processes;
+    private KafkaConsumer<String, String> consumer;
+
+    @DynamicPropertySource
+    static void kafkaProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.kafka.bootstrap-servers", CukesRestTest::bootstrapServers);
+    }
+
+    @io.cucumber.java.en.Given("generated process host")
+    public void generatedProcessHost() {
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("bootstrap.servers", CukesRestTest.bootstrapServers());
+        properties.put("group.id", "generated-process-test-" + UUID.randomUUID());
+        properties.put("auto.offset.reset", "earliest");
+        properties.put("enable.auto.commit", false);
+        consumer = new KafkaConsumer<>(properties, new StringDeserializer(), new StringDeserializer());
+        consumer.subscribe(List.of("process-work"));
+    }
+
+    @io.cucumber.java.en.Then("the committed process is published to Kafka")
+    public void committedProcessIsPublished() throws Exception {
+        long deadline = System.nanoTime() + Duration.ofSeconds(30).toNanos();
+        while (System.nanoTime() < deadline) {
+            for (var record : consumer.poll(Duration.ofMillis(250))) {
+                WorkListenerInput<?> work =
+                        new ObjectMapper().readValue(record.value(), WorkListenerInput.class);
+                String processType = new String(
+                        record.headers().lastHeader("processType").value(),
+                        java.nio.charset.StandardCharsets.UTF_8);
+                if (!"batch".equals(processType)) {
+                    continue;
+                }
+                assertEquals(
+                        "tenant0",
+                        new String(
+                                record.headers()
+                                        .lastHeader("x-chenile-tenant-id")
+                                        .value(),
+                                java.nio.charset.StandardCharsets.UTF_8));
+                assertEquals("process-work", work.execDef.get("queue"));
+                assertTrue(work.dispatchId != null && !work.dispatchId.isBlank());
+                assertTrue(
+                        processes.findById(work.processId).isPresent(),
+                        "Dispatch must follow the process commit");
+                return;
+            }
+        }
+        fail("No committed process worker command arrived at Kafka");
+    }
+
+    @io.cucumber.java.After
+    public void closeConsumer() {
+        if (consumer != null) {
+            consumer.close();
+        }
+    }
+}

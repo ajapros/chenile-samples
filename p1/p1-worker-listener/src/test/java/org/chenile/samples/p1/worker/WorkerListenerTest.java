@@ -1,0 +1,184 @@
+package org.chenile.samples.p1.worker;
+
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.chenile.core.context.ContextContainer;
+import org.chenile.orchestrator.process.api.ProcessManager;
+import org.chenile.orchestrator.process.worker.ExecutorWorkListener;
+import org.chenile.orchestrator.process.workers.WorkListenerInput;
+import org.chenile.orchestrator.process.workers.WorkerConstants;
+import org.chenile.workflow.dto.StateEntityServiceResponse;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import java.time.Duration;
+import java.util.List;
+import java.util.Properties;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+
+@SpringBootTest(
+        classes = WorkerListenerTest.Host.class,
+        properties = {
+            "spring.autoconfigure.exclude=org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration,org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration,org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoConfiguration",
+            "spring.kafka.consumer.auto-offset-reset=earliest",
+            "pubsub.topic.separator=_",
+            "chenile.kafka.consumer.topic-bindings[process-work]=process-work",
+            "chenile.kafka.consumer.group-id=test-workers",
+            "chenile.kafka.consumer.retry-interval-ms=25",
+            "chenile.kafka.consumer.max-retries=2"
+        })
+@RunWith(SpringRunner.class)
+public class WorkerListenerTest extends org.chenile.mqtt.test.KafkaBaseTest {
+    @DynamicPropertySource
+    static void kafkaProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.kafka.bootstrap-servers", () -> kafkaContainer.getBootstrapServers());
+    }
+
+    @Autowired KafkaTemplate<String, String> kafka;
+    @Autowired ApplicationContext beans;
+
+    @SpringBootApplication(
+            scanBasePackages = {
+                "org.chenile.configuration",
+                "org.chenile.service.registry.configuration",
+                "org.chenile.samples.p1.configuration"
+            })
+    public static class Host {
+        @Bean(name = "testExecutor")
+        public TestWorker testWorker() {
+            return new TestWorker();
+        }
+    }
+
+    public static class TestWorker extends ExecutorWorkListener<WorkerPayload, WorkerOutput> {
+        static volatile boolean fail;
+        static final java.util.concurrent.BlockingQueue<String> deliveries =
+                new java.util.concurrent.LinkedBlockingQueue<>();
+        static final AtomicInteger calls = new AtomicInteger();
+
+        public WorkerOutput doStart(WorkListenerInput<WorkerPayload> input) {
+            calls.incrementAndGet();
+            if (fail) {
+                throw new IllegalStateException("domain failure");
+            }
+            assertEquals("tenant0", ContextContainer.CONTEXT_CONTAINER.getTenant());
+            assertEquals("payload-value", input.payload.value);
+            deliveries.add(ContextContainer.CONTEXT_CONTAINER.getTenant());
+            return new WorkerOutput();
+        }
+    }
+
+    @MockitoBean(name = "processServiceProxy") ProcessManager manager;
+
+    @Test
+    public void consumesConfiguredProcessWorkTopicAndDeadLettersAfterRetries() throws Exception {
+        assertFalse(beans.containsBean("dataSource"));
+        StateEntityServiceResponse<org.chenile.orchestrator.process.model.Process> callbackResponse =
+                new StateEntityServiceResponse<>();
+        callbackResponse.setMutatedEntity(new org.chenile.orchestrator.process.model.Process());
+        when(manager.processById(anyString(), anyString(), any())).thenReturn(callbackResponse);
+        TestWorker.fail = false;
+        TestWorker.calls.set(0);
+        TestWorker.deliveries.clear();
+        String payload = workerMessage("worker-test-id");
+
+        kafka.send(record("process-work", payload)).get(30, TimeUnit.SECONDS);
+        assertEquals(
+                "tenant0",
+                TestWorker.deliveries.poll(30, TimeUnit.SECONDS),
+                "The configured Kafka topic must route to its matching Chenile event");
+        assertEquals(1, TestWorker.calls.get());
+
+        TestWorker.fail = true;
+        kafka.send(record("process-work", workerMessage("worker-failure-id"))).get(30, TimeUnit.SECONDS);
+        long callbackDeadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
+        while (TestWorker.calls.get() < 2 && System.nanoTime() < callbackDeadline) {
+            Thread.sleep(25);
+        }
+        verify(manager).processById(eq("worker-failure-id"), eq("doneWithErrors"), any());
+        TestWorker.fail = false;
+        try (KafkaConsumer<String, String> deadLetterConsumer = deadLetterConsumer()) {
+            deadLetterConsumer.subscribe(List.of("process-work.DLT"));
+            kafka.send(record("process-work", workerMessage("worker-unroutable-id"), "missing"))
+                    .get(30, TimeUnit.SECONDS);
+
+            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
+            boolean receivedDeadLetter = false;
+            while (System.nanoTime() < deadline && !receivedDeadLetter) {
+                var records = deadLetterConsumer.poll(Duration.ofMillis(250));
+                receivedDeadLetter = !records.isEmpty();
+            }
+            assertTrue(receivedDeadLetter, "Exhausted process work must be sent to its DLT");
+        } finally {
+            TestWorker.fail = false;
+        }
+        assertEquals(2, TestWorker.calls.get(), "The domain failure is reported to the process manager");
+    }
+
+    private static ProducerRecord<String, String> record(String topic, String payload) {
+        return record(topic, payload, "test");
+    }
+
+    private static ProducerRecord<String, String> record(String topic, String payload, String processType) {
+        ProducerRecord<String, String> record = new ProducerRecord<>(topic, null, payload);
+        record.headers().add(
+                WorkerConstants.PROCESS_TYPE,
+                processType.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        record.headers().add(
+                WorkerConstants.WORKER_TYPE,
+                "EXECUTOR".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        record.headers().add(
+                "x-chenile-tenant-id",
+                "tenant0".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        return record;
+    }
+
+    private static String workerMessage(String id) throws Exception {
+        WorkListenerInput<WorkerPayload> input = new WorkListenerInput<>();
+        input.processId = id;
+        input.dispatchId = id + "-dispatch";
+        input.payload = new WorkerPayload();
+        input.payload.value = "payload-value";
+        input.execDef = java.util.Map.of("queue", "process-work");
+        return new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(input);
+    }
+
+    public static class WorkerPayload {
+        public String value;
+    }
+
+    public static class WorkerOutput {
+        public String result = "complete";
+    }
+
+    private static KafkaConsumer<String, String> deadLetterConsumer() {
+        Properties properties = new Properties();
+        properties.put("bootstrap.servers", kafkaContainer.getBootstrapServers());
+        properties.put("group.id", "dead-letter-test-" + UUID.randomUUID());
+        properties.put("auto.offset.reset", "earliest");
+        properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        return new KafkaConsumer<>(properties);
+    }
+}

@@ -5,13 +5,14 @@
       "predecessorProcessType" : null,
       "predecessorArgs" : "BOTH",
       "processType" : "batch",
-      "args" : "com.mycompany.myorg.p1.model.BatchIn",
+      "args" : "org.chenile.samples.p1.model.BatchIn",
       "leaf" : false,
       "config" : {
         "queue" : "process-work"
       },
       "inputFields" : {
-        "batchId" : "string"
+        "batchId" : "string",
+        "count" : "int"
       },
       "outputFields" : null
     },
@@ -20,13 +21,14 @@
       "predecessorProcessType" : null,
       "predecessorArgs" : "BOTH",
       "processType" : "item",
-      "args" : "com.mycompany.myorg.p1.model.ItemIn",
+      "args" : "org.chenile.samples.p1.model.ItemIn",
       "leaf" : true,
       "config" : {
         "queue" : "process-work"
       },
       "inputFields" : {
-        "itemId" : "string"
+        "itemId" : "string",
+        "index" : "int"
       },
       "outputFields" : {
         "processed" : "boolean",

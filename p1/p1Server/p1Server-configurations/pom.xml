@@ -5,7 +5,7 @@
 
 	<parent>
 		<artifactId>p1Server-parent</artifactId>
-		<groupId>com.mycompany.myorg.p1Server</groupId>
+		<groupId>org.chenile.samples.p1Server</groupId>
 		<version>${revision}</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>

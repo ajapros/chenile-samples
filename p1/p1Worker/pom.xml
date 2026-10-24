@@ -9,7 +9,7 @@
 	</modules>
 
 	<parent>
-		<groupId>com.mycompany.myorg.p1</groupId>
+		<groupId>org.chenile.samples.p1</groupId>
 		<artifactId>p1-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
@@ -20,7 +20,7 @@
 		<revision>0.0.1-SNAPSHOT</revision>
 	</properties>
 	
-	<groupId>com.mycompany.myorg.p1Worker</groupId>
+	<groupId>org.chenile.samples.p1Worker</groupId>
 	<artifactId>p1Worker-parent</artifactId>
 	<version>${revision}</version>
 	<name>All Modules that belong to the P1Worker deployment</name>

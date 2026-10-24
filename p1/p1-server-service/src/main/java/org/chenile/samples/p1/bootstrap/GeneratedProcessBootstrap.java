@@ -1,0 +1,92 @@
+package org.chenile.samples.p1.bootstrap;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.chenile.orchestrator.process.config.model.ProcessDef;
+import org.chenile.orchestrator.process.config.reader.ProcessConfigurator;
+import org.chenile.orchestrator.process.configuration.dao.ProcessDefinitionRepository;
+import org.chenile.orchestrator.process.configuration.model.ProcessDefinition;
+import org.chenile.orchestrator.process.service.defs.DatabaseProcessConfigurator;
+import org.chenile.trigger.cron.*;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
+
+/** Seeds missing definitions/schedules only. Restarts never overwrite administrator edits. */
+@Component
+@Order(Ordered.HIGHEST_PRECEDENCE)
+public class GeneratedProcessBootstrap implements ApplicationRunner {
+    private final ProcessConfigurator configurator;
+    private final ProcessDefinitionRepository definitions;
+    private final CrontabRepository crons;
+    private final CrontabService cronService;
+    private final ObjectMapper json;
+    private final TransactionTemplate transactions;
+    public GeneratedProcessBootstrap(
+            ProcessConfigurator configurator,
+            ProcessDefinitionRepository definitions,
+            CrontabRepository crons,
+            CrontabService cronService,
+            ObjectMapper json,
+            PlatformTransactionManager manager) {
+        this.configurator = configurator;
+        this.definitions = definitions;
+        this.crons = crons;
+        this.cronService = cronService;
+        this.json = json;
+        this.transactions = new TransactionTemplate(manager);
+    }
+    @Override public void run(ApplicationArguments args) throws Exception {
+        try (var stream = getClass().getResourceAsStream("/p1/defs.json")) {
+            var source = configurator instanceof DatabaseProcessConfigurator ? new ProcessConfigurator() : configurator;
+            source.read(stream);
+            if (configurator instanceof DatabaseProcessConfigurator database) {
+                // Flush all levels in one transaction before invalidating the definition cache.
+                transactions.executeWithoutResult(
+                        tx ->
+                                source.processes.processMap.forEach(
+                                        (name, definition) -> {
+                                            if (!definitions.existsById(name)) {
+                                                definitions.save(
+                                                        new ProcessDefinition(
+                                                                name, serialize(definition)));
+                                            }
+                                        }));
+                database.clearCache();
+            }
+        }
+        try (var stream = getClass().getResourceAsStream("/p1/cron-triggers.json")) {
+            var schedules = new JsonCrontabRepository();
+            schedules.read(stream);
+            for (var cron : schedules.findAll()) {
+                String name = cron.name;
+                String tenant = cron.tenant;
+                var existing = crons.findAll().stream().filter(c -> c.name.equals(name)).findFirst();
+                if (existing.isPresent()) {
+                    if (!tenant.equals(existing.get().tenant)) {
+                        throw new IllegalStateException(
+                                "Cron name belongs to another tenant: " + name);
+                    }
+                    continue;
+                }
+                var context = org.chenile.core.context.ContextContainer.CONTEXT_CONTAINER;
+                var snapshot = context.snapshot();
+                try {
+                    context.setTenant(tenant);
+                    cronService.save(cron);
+                } finally {
+                    context.restore(snapshot);
+                }
+            }
+        }
+    }
+    private String serialize(ProcessDef definition) {
+        try { return json.writeValueAsString(definition); }
+        catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            throw new IllegalStateException("Cannot serialize " + definition.processType, e);
+        }
+    }
+}

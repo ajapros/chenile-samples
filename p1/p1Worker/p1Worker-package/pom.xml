@@ -5,7 +5,7 @@
 
 	<parent>
 		<artifactId>p1Worker-parent</artifactId>
-		<groupId>com.mycompany.myorg.p1Worker</groupId>
+		<groupId>org.chenile.samples.p1Worker</groupId>
 		<version>${revision}</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
@@ -38,7 +38,7 @@
 			<artifactId>utils</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.mycompany.myorg.p1Worker</groupId>
+			<groupId>org.chenile.samples.p1Worker</groupId>
 			<artifactId>p1Worker-configurations</artifactId>
 			<version>${revision}</version>
 		</dependency>
@@ -51,17 +51,17 @@
 		<!-- Start including all the services that need to be packaged with this mini monolith -->
 
         <dependency>
-            <groupId>com.mycompany.myorg.p1</groupId>
+            <groupId>org.chenile.samples.p1</groupId>
             <artifactId>p1-worker-listener</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.mycompany.myorg.p1</groupId>
+            <groupId>org.chenile.samples.p1</groupId>
             <artifactId>p1-batch-service</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.mycompany.myorg.p1</groupId>
+            <groupId>org.chenile.samples.p1</groupId>
             <artifactId>p1-item-service</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>

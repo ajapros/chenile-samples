@@ -21,7 +21,7 @@
         <appender-ref ref="FILE"/>
     </appender>   
 
-    <logger name="com.mycompany.myorg" level="${logback.loglevel}"/>
+    <logger name="org.chenile.samples" level="${logback.loglevel}"/>
 
     <logger name="javax.activation" level="WARN"/>
     <logger name="javax.mail" level="WARN"/>
@@ -61,11 +61,11 @@
     <!-- <logger name="org.mybatis.spring" level="DEBUG"/> -->
     
     <springProfile name="develop">
-    	<logger name="com.mycompany" level="DEBUG"/>
+    	<logger name="org.chenile" level="DEBUG"/>
     </springProfile>
     
     <springProfile name="!develop">
-    	<logger name="com.mycompany" level="INFO"/>
+    	<logger name="org.chenile" level="INFO"/>
     </springProfile>
 
 	<contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
