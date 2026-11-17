@@ -11,27 +11,27 @@
         <dependency>
             <groupId>org.chenile.orchestrator.process</groupId>
             <artifactId>process-service</artifactId>
-            <version>2.1.35</version>
+            <version>2.1.36</version>
         </dependency>
         <dependency>
-            <groupId>org.chenile.orchestrator.process</groupId>
-            <artifactId>crontab-service</artifactId>
-            <version>2.1.35</version>
+            <groupId>org.chenile</groupId>
+            <artifactId>chenile-scheduler-db</artifactId>
+            <version>2.1.36</version>
         </dependency>
         <dependency>
             <groupId>org.chenile.orchestrator.process</groupId>
             <artifactId>trigger-service</artifactId>
-            <version>2.1.35</version>
+            <version>2.1.36</version>
         </dependency>
         <dependency>
             <groupId>org.chenile.orchestrator.process</groupId>
             <artifactId>q-based-process-starter</artifactId>
-            <version>2.1.35</version>
+            <version>2.1.36</version>
         </dependency>
         <dependency>
             <groupId>org.chenile</groupId>
             <artifactId>chenile-kafka</artifactId>
-            <version>2.1.35</version>
+            <version>2.1.36</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -45,7 +45,7 @@
         <dependency>
             <groupId>org.chenile</groupId>
             <artifactId>cucumber-utils</artifactId>
-            <version>2.1.35</version>
+            <version>2.1.36</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -67,7 +67,7 @@
         <dependency>
             <groupId>org.chenile</groupId>
             <artifactId>cucumber-mqtt-utils</artifactId>
-            <version>2.1.35</version>
+            <version>2.1.36</version>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -11,22 +11,22 @@
         <dependency>
             <groupId>org.chenile.orchestrator.process</groupId>
             <artifactId>process-delegate</artifactId>
-            <version>2.1.35</version>
+            <version>2.1.36</version>
         </dependency>
         <dependency>
             <groupId>org.chenile</groupId>
             <artifactId>chenile-http</artifactId>
-            <version>2.1.35</version>
+            <version>2.1.36</version>
         </dependency>
         <dependency>
             <groupId>org.chenile</groupId>
             <artifactId>service-registry-delegate</artifactId>
-            <version>2.1.35</version>
+            <version>2.1.36</version>
         </dependency>
         <dependency>
             <groupId>org.chenile</groupId>
             <artifactId>chenile-kafka</artifactId>
-            <version>2.1.35</version>
+            <version>2.1.36</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -36,7 +36,7 @@
         <dependency>
             <groupId>org.chenile</groupId>
             <artifactId>cucumber-mqtt-utils</artifactId>
-            <version>2.1.35</version>
+            <version>2.1.36</version>
             <scope>test</scope>
         </dependency>
         <dependency>

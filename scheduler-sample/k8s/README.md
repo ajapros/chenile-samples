@@ -2,7 +2,7 @@
 
 This directory shows the production Kubernetes shape for scheduled work.
 
-Use this setup when the platform owns scheduling and workers. Kubernetes creates CronJob executions, and the worker image owns the job implementation. Do not use an application-side Fabric8 launcher for production scheduling unless your platform explicitly requires the scheduler application to create Jobs dynamically.
+Use this setup when the platform owns scheduling and workers. Kubernetes creates CronJob executions, and the worker image owns the job implementation. Chenile schedules only fire events; starting a Kubernetes Job, if you want one, is a subscriber's choice, not a scheduler feature.
 
 ## Ownership model
 

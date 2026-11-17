@@ -1,0 +1,7 @@
+{
+  "id": "daily-report",
+  "name": "Daily sales report (every second for the test)",
+  "cronExpression": "* * * * * ?",
+  "eventId": "scheduledReport",
+  "payload": "{ \"reportName\": \"daily-sales\", \"businessDate\": \"2026-06-23\" }"
+}

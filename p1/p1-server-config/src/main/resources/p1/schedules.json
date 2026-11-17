@@ -1,0 +1,15 @@
+[ {
+  "name" : "daily-batch",
+  "tenant" : "default",
+  "enabled" : false,
+  "cronExpression" : "0 0 2 * * ?",
+  "timezone" : "UTC",
+  "eventId" : "ProcessCreate",
+  "description" : null,
+  "payload" : {
+    "processDefName" : "batch",
+    "args" : {
+      "batchId" : "example"
+    }
+  }
+} ]

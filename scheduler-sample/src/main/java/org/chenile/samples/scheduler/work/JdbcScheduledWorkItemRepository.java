@@ -2,7 +2,6 @@ package org.chenile.samples.scheduler.work;
 
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -13,7 +12,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
-@Repository
+/** Created in SchedulerSampleConfiguration. */
 public class JdbcScheduledWorkItemRepository {
 	private final JdbcTemplate jdbcTemplate;
 	private final TransactionTemplate transactionTemplate;

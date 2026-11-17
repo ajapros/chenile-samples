@@ -2,13 +2,9 @@ package org.chenile.samples.scheduler.work;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Component;
 
-@Component
-@ConditionalOnProperty(name = "scheduler.sample.worker.enabled", havingValue = "true")
+/** Created in SchedulerSampleConfiguration when scheduler.sample.worker.enabled=true. */
 public class ScheduledWorkItemWorker implements CommandLineRunner {
 	private static final Logger logger = LoggerFactory.getLogger(ScheduledWorkItemWorker.class);
 	private final JdbcScheduledWorkItemRepository repository;
@@ -17,11 +13,8 @@ public class ScheduledWorkItemWorker implements CommandLineRunner {
 	private final boolean runOnce;
 	private final long pollIntervalMillis;
 
-	public ScheduledWorkItemWorker(JdbcScheduledWorkItemRepository repository,
-			@Value("${scheduler.sample.worker.id:${HOSTNAME:local-worker}}") String workerId,
-			@Value("${scheduler.sample.worker.lock-seconds:120}") int lockSeconds,
-			@Value("${scheduler.sample.worker.run-once:true}") boolean runOnce,
-			@Value("${scheduler.sample.worker.poll-interval-millis:5000}") long pollIntervalMillis) {
+	public ScheduledWorkItemWorker(JdbcScheduledWorkItemRepository repository, String workerId, int lockSeconds,
+			boolean runOnce, long pollIntervalMillis) {
 		this.repository = repository;
 		this.workerId = workerId;
 		this.lockSeconds = lockSeconds;
@@ -42,7 +35,7 @@ public class ScheduledWorkItemWorker implements CommandLineRunner {
 		} while (true);
 	}
 
-	boolean processOne() {
+	public boolean processOne() {
 		return repository.claimNext(workerId, lockSeconds)
 				.map(item -> {
 					try {

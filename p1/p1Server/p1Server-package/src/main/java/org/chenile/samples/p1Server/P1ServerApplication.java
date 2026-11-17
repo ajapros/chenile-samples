@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication(scanBasePackages = { "org.chenile.samples.**.configuration",
 		"org.chenile.service.registry.configuration",
 		"org.chenile.configuration", "org.chenile.orchestrator.process.configuration" })
-@EntityScan({ "org.chenile.samples.**.model", "org.chenile.orchestrator.process.model", "org.chenile.orchestrator.process.configuration.model", "org.chenile.trigger.cron", "org.chenile.service.registry.model" })
-@EnableJpaRepositories(basePackages = { "org.chenile.samples.**.configuration.dao", "org.chenile.orchestrator.process.configuration.dao", "org.chenile.trigger.cron", "org.chenile.service.registry.configuration.dao" })
+@EntityScan({ "org.chenile.samples.**.model", "org.chenile.orchestrator.process.model", "org.chenile.orchestrator.process.configuration.model", "org.chenile.scheduler.db", "org.chenile.service.registry.model" })
+@EnableJpaRepositories(basePackages = { "org.chenile.samples.**.configuration.dao", "org.chenile.orchestrator.process.configuration.dao", "org.chenile.scheduler.db", "org.chenile.service.registry.configuration.dao" })
 @EnableTransactionManagement
 public class P1ServerApplication extends SpringBootServletInitializer {
 

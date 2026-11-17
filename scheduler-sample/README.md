@@ -1,29 +1,27 @@
 # Chenile Scheduler Sample
 
-This sample shows two production-style scheduler integrations:
+This sample shows Chenile's event-based scheduling (Chenile 2.1.36):
 
-- JDBC execution history with local Chenile service execution.
-- Kubernetes-native CronJob workers owned by DevOps.
-- DB-backed KEDA scaling for idempotent Postgres work items.
+- **A schedule fires an event.** `schedules/daily-report.json` fires the `scheduledReport` event every 30 seconds
+  through chenile-scheduler. Nothing names a service or operation.
+- **A service subscribes to the event.** `ScheduledReportController.generate` carries
+  `@EventsSubscribedTo("scheduledReport")`, so the same operation runs on `POST /scheduled-report/generate` and on
+  every fire. It enqueues an idempotent work item (`scheduled-report:<report>:<date>`) in Postgres or H2.
+- **Workers do the work.** The `worker` profile claims and processes work items; in Kubernetes, KEDA scales the
+  workers on the backlog, or a CronJob runs them.
 
-The scheduler framework owns the generic trigger, dispatch, and execution-store contracts. In production Kubernetes, the preferred setup is to let Kubernetes own CronJobs and let worker images own the job implementation. Fabric8 is useful in tests or specialized dynamic-job launchers, but it is not the default production recommendation in this sample.
+Each fire goes through the TriggerService: in this sample it is chenile-trigger's in-memory DirectTriggerService,
+which deduplicates by `schedule:<id>:<scheduled fire time>`. Running several scheduler nodes needs clustered Quartz
+(`spring.quartz.job-store-type=jdbc`), so that each fire happens on one node.
 
-## Run with JDBC execution history
-
-The `jdbc` profile uses:
-
-- `chenile.scheduler.store.type=jdbc`
-- H2 datasource
-- `chenile-scheduler-schema.sql`
-- default launcher `local`
-
-Run:
+## Run with H2
 
 ```bash
-mvn spring-boot:run -Dspring-boot.run.profiles=jdbc
+mvn spring-boot:run
 ```
 
-This mode executes `scheduledReportService.generate` in the same JVM and records execution status in `chenile_scheduler_job_execution`.
+The schedule fires every 30 seconds and the log shows `Scheduled report work item enqueued` once, then
+`already-exists` for the same report and date.
 
 ## Run locally with Postgres
 
@@ -45,14 +43,6 @@ Run the app against that database:
 
 ```bash
 mvn spring-boot:run -Dspring-boot.run.profiles=postgres
-```
-
-Check the scheduler execution table:
-
-```bash
-docker exec chenile-scheduler-sample-postgres \
-  psql -U scheduler -d scheduler \
-  -c "select execution_id, job_name, status, launcher, started_at, finished_at from chenile_scheduler_job_execution order by started_at desc limit 10;"
 ```
 
 Check the DB-backed worker backlog:
@@ -92,7 +82,8 @@ Read `k8s/README.md` for namespace, Postgres, scheduler deployment, CronJob work
 
 ## Files to read
 
-- `src/main/resources/org/chenile/samples/scheduler/jobs/jdbc-report.json`
+- `src/main/resources/org/chenile/samples/scheduler/schedules/daily-report.json`
+- `src/main/java/org/chenile/samples/scheduler/configuration/controller/ScheduledReportController.java`
 - `k8s/cron-workers/10-scheduled-report-cronjob.yaml`
 - `k8s/scaling/scheduler-hpa.yaml`
 - `k8s/scaling/keda-postgres-worker-scaledobject.yaml`
